@@ -25,8 +25,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Gun _rightGun;
     [SerializeField] private Gun _leftGun;
 
-    [SerializeField] private Gun[] _guns;
+    [SerializeField] private List<Gun> _guns;
+    [SerializeField] private Camera _mainCamera;
 
+    [SerializeField] private float _health = 100f;
+    [SerializeField] private float _maxHealth = 100f;
+
+    [SerializeField] private Gun.TypeOfGun _currentGunType;
+    [SerializeField] private bool _dualWielding;
+
+    [SerializeField] private Gun[] _gunPrefabs;
+
+    [SerializeField] private Gun.TypeOfGun[] _gunOrder = { Gun.TypeOfGun.Pistol, Gun.TypeOfGun.SMG };
     private Vector2 _Input = Vector2.zero;
 
     private void Awake()
@@ -37,6 +47,16 @@ public class PlayerController : MonoBehaviour
     {
         _gravitationalAcceleration = Physics.gravity.magnitude;
         Cursor.lockState = CursorLockMode.Locked;
+        if (_mainCamera == null)
+        {
+            _mainCamera = Camera.main;
+        }
+        _health = _maxHealth;
+
+        Gun gun = Instantiate(_gunPrefabs[0]);
+        _guns = new List<Gun>();
+        _currentGunType = gun._typeOfGun;
+        _guns.Add(gun);
     }
 
     // Update is called once per frame
@@ -49,19 +69,84 @@ public class PlayerController : MonoBehaviour
         SetVerticalVelocity();
 
         SetGuns();
+        DeActivateGuns();
+    }
 
+    private void DeActivateGuns()
+    {
+        foreach (Gun gun in _guns)
+        {
+            if (!_dualWielding)
+            {
+                if (gun != _rightGun)
+                {
+                    gun.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                if (gun != _rightGun && gun != _leftGun)
+                {
+                    gun.gameObject.SetActive(false);
+                }
+            }
+        }
     }
 
     private void SetGuns()
     {
         _rightGun = _guns[0];
-        _rightGun.transform.position = _rightHostler.transform.position;
-        _rightGun.transform.rotation = _rightHostler.transform.rotation;
+        _rightGun.transform.localPosition = Vector3.zero;
+        _rightGun.transform.SetParent(_rightHostler);
+        _rightGun.transform.localRotation = Quaternion.Euler(_mainCamera.transform.rotation.eulerAngles.x, 0, 0);
         _rightGun.gameObject.SetActive(true);
+        if (_dualWielding)
+        {
+            _leftGun.transform.SetParent(_leftHostler);
+            _leftGun.transform.localPosition = Vector3.zero;
+            _leftGun.transform.localRotation = Quaternion.Euler(_mainCamera.transform.rotation.eulerAngles.x, 0, 0);
+            _leftGun.gameObject.SetActive(true);
+        }
 
         if (Input.GetMouseButton(0))
         {
-            _rightGun.Shoot(this.transform.position, "Player");
+            _rightGun.Shoot(_rightGun.transform.position, "Player");
+            if (_dualWielding)
+            {
+                _leftGun.Shoot(_leftGun.transform.position, "Player");
+            }
+        }
+        if (Input.GetMouseButton(1))
+        {
+            int gunAmount = 0;
+            Gun.TypeOfGun _guntype = _currentGunType;
+            bool setRightGun = false;
+            Gun leftGun = null, rightGun = null;
+            foreach (Gun gun in _guns)
+            {
+                if (gun._typeOfGun == _guntype)
+                {
+                    if (rightGun == null && setRightGun == false)
+                    {
+                        rightGun = gun;
+                        setRightGun = true;
+                        Debug.Log("Set Right Gun"); 
+                    }
+                    else if (setRightGun == true)
+                    {
+                        leftGun = gun;
+                        Debug.LogWarning("Set Left Gun");
+                    }
+                    gunAmount++;
+                }
+
+                _rightGun = rightGun;
+                _leftGun = leftGun;
+            }
+            if (gunAmount >= 2)
+            {
+                _dualWielding = true;
+            }
         }
     }
 
@@ -116,6 +201,16 @@ public class PlayerController : MonoBehaviour
     private void SetInput()
     {
         _Input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            _rightGun.isReloading = true;
+            _rightGun.timer = 0;
+            if (_dualWielding)
+            {
+                _leftGun.isReloading = true;
+                _leftGun.timer = 0;
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -123,5 +218,36 @@ public class PlayerController : MonoBehaviour
         Vector3 _movement = Vector3.zero;
         _movement += transform.right * _playerVelocity.x + transform.up * _playerVelocity.y + transform.forward * _playerVelocity.z;
         _characterController.Move(_movement * Time.deltaTime);
+    }
+
+    public void Damage(float damageAmount)
+    {
+        _health -= damageAmount;
+    }
+
+    public void AddGun(Gun gunToAdd)
+    {
+        int maxGunCount = gunToAdd.dualWieldable ? 1 : 2;
+        int gunCount = 0;
+        Gun gunToAddAmmoTo = null;
+        foreach (Gun gun in _guns)
+        {
+            if (gun._typeOfGun == gunToAdd._typeOfGun)
+            {
+                gunCount++;
+            }
+        }
+        if (gunCount > maxGunCount)
+        {
+            if (gunToAddAmmoTo != null)
+            {
+                gunToAddAmmoTo.ammoInReserve += gunToAdd.clipSize;
+                Destroy(gunToAdd.gameObject);
+            }
+        }
+        else
+        {
+            _guns.Add(gunToAdd);
+        }
     }
 }

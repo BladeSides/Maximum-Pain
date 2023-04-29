@@ -15,6 +15,11 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private Transform _playerTransform;
     [SerializeField] private float _viewDistance = 15f;
     [SerializeField] private Vector3 _target;
+    [SerializeField] private float _health = 100f;
+    [SerializeField] private Transform _hostler;
+    [SerializeField] private Gun _gun;
+    
+
     private enum State 
     { 
         Unaware,
@@ -40,6 +45,20 @@ public class EnemyController : MonoBehaviour
         {
             UpdateAI();
             _timer = 0f;
+        }
+
+        if (_health <= 0)
+        {
+            _gun.transform.parent = null;
+            _gun.isHeld = false;
+            _gun.Owner = null;
+            Destroy(this.gameObject);
+        }
+
+        if (_state == State.Following)
+        {
+            _gun.Shoot(_gun.transform.position, "Enemy");
+            this.transform.LookAt(new Vector3(_playerTransform.position.x, this.transform.position.y, _playerTransform.position.z));
         }
     }
 
@@ -88,5 +107,10 @@ public class EnemyController : MonoBehaviour
                 _state = State.Unaware;
             }
         }
+    }
+
+    public void Damage(float damageAmount)
+    {
+        _health -= damageAmount;
     }
 }

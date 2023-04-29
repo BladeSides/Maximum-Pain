@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,6 +20,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _gravitationalAcceleration;
     [SerializeField] private float _jumpVelocity = 10f;
 
+    [SerializeField] private Transform _rightHostler;
+    [SerializeField] private Transform _leftHostler;
+    [SerializeField] private Gun _rightGun;
+    [SerializeField] private Gun _leftGun;
+
+    [SerializeField] private Gun[] _guns;
+
     private Vector2 _Input = Vector2.zero;
 
     private void Awake()
@@ -28,6 +36,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         _gravitationalAcceleration = Physics.gravity.magnitude;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
@@ -37,6 +46,27 @@ public class PlayerController : MonoBehaviour
 
         SetPlanarVelocity(); //As in, not jumping on the Y-Axis
 
+        SetVerticalVelocity();
+
+        SetGuns();
+
+    }
+
+    private void SetGuns()
+    {
+        _rightGun = _guns[0];
+        _rightGun.transform.position = _rightHostler.transform.position;
+        _rightGun.transform.rotation = _rightHostler.transform.rotation;
+        _rightGun.gameObject.SetActive(true);
+
+        if (Input.GetMouseButton(0))
+        {
+            _rightGun.Shoot(this.transform.position, "Player");
+        }
+    }
+
+    private void SetVerticalVelocity()
+    {
         if (CanJump())
         {
             _playerVelocity += Vector3.up * _jumpVelocity;
@@ -49,7 +79,6 @@ public class PlayerController : MonoBehaviour
         {
             _playerVelocity = new Vector3(_playerVelocity.x, -_groundedDownwardVelocity, _playerVelocity.z);
         }
-
     }
 
     private bool IsGrounded()

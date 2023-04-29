@@ -86,7 +86,7 @@ public class CameraController : MonoBehaviour
                 /*_cameraHolder.transform.localPosition = Vector3.Lerp(transform.localPosition, transform.localPosition
                     + (_target.root.position - transform.position).normalized * MoveDistance, _clipLerp * Time.deltaTime);*/
                 _mainCamera.transform.localPosition += new Vector3(0, 0, _clipLerp * Time.deltaTime * MoveDistance);
-                print("Clipped");
+                //print("Clipped");
             }
             else 
             {

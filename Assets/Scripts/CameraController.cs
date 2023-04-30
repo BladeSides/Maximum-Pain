@@ -49,10 +49,10 @@ public class CameraController : MonoBehaviour
     {
         _mouseInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
-        _deltaAngleX = _mouseInput.x * Time.deltaTime * _mouseSenstivity;
+        _deltaAngleX = _mouseInput.x * Time.unscaledDeltaTime * _mouseSenstivity;
         _angleX += _deltaAngleX;
         
-        float _testDeltaY = _mouseInput.y * Time.deltaTime * _mouseSenstivity;
+        float _testDeltaY = _mouseInput.y * Time.unscaledDeltaTime * _mouseSenstivity;
         if (_testDeltaY + _angleY < _yLimits.y && _testDeltaY + _angleY > _yLimits.x)
         {
             _deltaAngleY = _testDeltaY;
@@ -85,7 +85,7 @@ public class CameraController : MonoBehaviour
                 MoveDistance = (_cameraHolder.transform.position - hitBack.transform.position).magnitude + _clipOffset;
                 /*_cameraHolder.transform.localPosition = Vector3.Lerp(transform.localPosition, transform.localPosition
                     + (_target.root.position - transform.position).normalized * MoveDistance, _clipLerp * Time.deltaTime);*/
-                _mainCamera.transform.localPosition += new Vector3(0, 0, _clipLerp * Time.deltaTime * MoveDistance);
+                _mainCamera.transform.localPosition += new Vector3(0, 0, _clipLerp * Time.unscaledDeltaTime * MoveDistance);
                 //print("Clipped");
             }
             else 
@@ -110,7 +110,7 @@ public class CameraController : MonoBehaviour
 
     private void ClipBack()
     {
-        _mainCamera.transform.localPosition = Vector3.Lerp(this.transform.localPosition, _mainCameraStartingLocalPosition, _clipLerp * Time.deltaTime);
+        _mainCamera.transform.localPosition = Vector3.Lerp(this.transform.localPosition, _mainCameraStartingLocalPosition, _clipLerp * Time.unscaledDeltaTime);
     }
 
     private void LateUpdate() //So that camera moves after player

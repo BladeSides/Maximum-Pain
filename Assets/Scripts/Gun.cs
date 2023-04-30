@@ -9,7 +9,8 @@ public class Gun : MonoBehaviour
     public enum TypeOfGun 
     {
         Pistol,
-        SMG
+        SMG,
+        Shotgun
     }
 
     public TypeOfGun _typeOfGun;

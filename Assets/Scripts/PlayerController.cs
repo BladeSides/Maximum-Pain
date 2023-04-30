@@ -36,7 +36,10 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private Gun[] _gunPrefabs;
 
-    [SerializeField] private Gun.TypeOfGun[] _gunOrder = { Gun.TypeOfGun.Pistol, Gun.TypeOfGun.SMG };
+    [SerializeField] private Gun.TypeOfGun[] _gunOrder = { Gun.TypeOfGun.Pistol, Gun.TypeOfGun.SMG, Gun.TypeOfGun.Shotgun };
+
+    [SerializeField] private bool _isSlowMotion = false;
+
     private Vector2 _Input = Vector2.zero;
 
     private void Awake()
@@ -57,11 +60,81 @@ public class PlayerController : MonoBehaviour
         _guns = new List<Gun>();
         _currentGunType = gun._typeOfGun;
         _guns.Add(gun);
+        _rightGun = gun;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            int _nextGunIndex = 0;
+            bool changedGun = false;
+            foreach (Gun.TypeOfGun gunType in _gunOrder)
+            {
+                if (gunType == _currentGunType)
+                {
+                    _nextGunIndex = (int)gunType + 1;
+                    if (_nextGunIndex > _gunOrder.Length - 1)
+                    {
+                        _nextGunIndex = 0;
+                    }
+                    while (_nextGunIndex != (int)_currentGunType)
+                    {
+                        foreach (Gun gun in _guns)
+                        {
+                            if (_nextGunIndex == (int)gun._typeOfGun)
+                            {
+                                _nextGunIndex = (int)gun._typeOfGun;
+                                changedGun = true;
+                            }
+                        }
+                        if (changedGun == false)
+                        {
+                            _nextGunIndex++;
+                            if (_nextGunIndex > _gunOrder.Length - 1)
+                            {
+                                _nextGunIndex = 0;
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            foreach (Gun gun in _guns)
+            {
+                print("Testing guns");
+                if ((int)gun._typeOfGun == _nextGunIndex)
+                {
+                    print(_nextGunIndex);
+                    _rightGun = gun;
+                    _dualWielding = false;
+                    _leftGun = null;
+                    _currentGunType = gun._typeOfGun;
+                    changedGun = true;
+                    print("Changed Gun");
+                }
+            }
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            _isSlowMotion = !_isSlowMotion;
+        }
+
+        if (_isSlowMotion)
+        {
+            Time.timeScale = 0.25f;
+            Time.fixedDeltaTime = 0.02f * 0.25f;
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            Time.fixedDeltaTime = 0.02f;
+        }
         SetInput();
 
         SetPlanarVelocity(); //As in, not jumping on the Y-Axis
@@ -95,7 +168,6 @@ public class PlayerController : MonoBehaviour
 
     private void SetGuns()
     {
-        _rightGun = _guns[0];
         _rightGun.transform.localPosition = Vector3.zero;
         _rightGun.transform.SetParent(_rightHostler);
         _rightGun.transform.localRotation = Quaternion.Euler(_mainCamera.transform.rotation.eulerAngles.x, 0, 0);
@@ -116,7 +188,7 @@ public class PlayerController : MonoBehaviour
                 _leftGun.Shoot(_leftGun.transform.position, "Player");
             }
         }
-        if (Input.GetMouseButton(1))
+        if (Input.GetKeyDown(KeyCode.Q))
         {
             int gunAmount = 0;
             Gun.TypeOfGun _guntype = _currentGunType;
@@ -248,6 +320,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             _guns.Add(gunToAdd);
+            gunToAdd.isHeld = true;
         }
     }
 }

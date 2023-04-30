@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+[RequireComponent(typeof(Rigidbody))]
 public class Gun : MonoBehaviour
 {
     public GameObject Owner;
@@ -24,6 +24,12 @@ public class Gun : MonoBehaviour
     public float timer;
     public float damage;
     public GameObject _player;
+    private Rigidbody _rigidBody;
+
+    private void Awake()
+    {
+        _rigidBody = GetComponent<Rigidbody>();
+    }
     void Start()
     {
         _player = GameObject.FindGameObjectWithTag("Player");
@@ -34,6 +40,18 @@ public class Gun : MonoBehaviour
     {
         timer+=Time.deltaTime;
         ReloadGun();
+    }
+
+    private void FixedUpdate()
+    {
+        if (isHeld)
+        {
+            _rigidBody.useGravity = false;
+        }
+        else
+        {
+            _rigidBody.useGravity = true;
+        }
     }
 
     public void Shoot(Vector3 Origin, string Owner)
@@ -66,7 +84,10 @@ public class Gun : MonoBehaviour
                         Debug.DrawLine(Origin, hit.point, Color.green, 0.5f);
                         if (hit.transform.root.tag == "Player")
                         {
-                            hit.transform.gameObject.GetComponent<PlayerController>().Damage(damage);
+                            if (hit.transform.gameObject.TryGetComponent<PlayerController>(out PlayerController pc))
+                            {
+                                pc.Damage(damage);
+                            }
                         }
                     }
                     ammoInGun--;
@@ -116,11 +137,11 @@ public class Gun : MonoBehaviour
         return (ammoInGun > 0 && !isReloading);
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
         if (!isHeld)
         {
-            if (collision.transform.root.tag == "Player")
+            if (other.transform.root.tag == "Player")
             {
                 _player.gameObject.GetComponent<PlayerController>().AddGun(this);
             }

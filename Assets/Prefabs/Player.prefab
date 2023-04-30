@@ -1,5 +1,67 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1015420881
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1015420882}
+  m_Layer: 0
+  m_Name: Right Hostler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1015420882
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1015420881}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.75, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5625952233127625790}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1194432601
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1194432602}
+  m_Layer: 0
+  m_Name: Left Hostler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1194432602
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1194432601}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.75, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5625952233127625790}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5625952232717059787
 GameObject:
   m_ObjectHideFlags: 0
@@ -11,6 +73,7 @@ GameObject:
   - component: {fileID: 5625952232717059780}
   - component: {fileID: 5625952232717059782}
   - component: {fileID: 5625952232717059781}
+  - component: {fileID: 525875115}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -72,6 +135,33 @@ MonoBehaviour:
   _playerVelocity: {x: 0, y: 0, z: 0}
   _gravitationalAcceleration: 0
   _jumpVelocity: 5
+  _rightHostler: {fileID: 1015420882}
+  _leftHostler: {fileID: 1194432602}
+  _rightGun: {fileID: 0}
+  _leftGun: {fileID: 0}
+  _guns: []
+  _mainCamera: {fileID: 0}
+  _health: 100
+  _maxHealth: 100
+  _currentGunType: 0
+  _dualWielding: 0
+  _gunPrefabs:
+  - {fileID: 6260467907305240385, guid: e89f67191c499104383f42dc922b6f92, type: 3}
+  _gunOrder: 0000000001000000
+--- !u!136 &525875115
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5625952232717059787}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5625952232775998084
 GameObject:
   m_ObjectHideFlags: 0
@@ -86,7 +176,7 @@ GameObject:
   - component: {fileID: 5625952232775998086}
   m_Layer: 0
   m_Name: Cube
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -213,7 +303,7 @@ GameObject:
   - component: {fileID: 5625952233127625788}
   m_Layer: 0
   m_Name: Model
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -232,6 +322,8 @@ Transform:
   m_Children:
   - {fileID: 5625952232775998085}
   - {fileID: 7832418665739263259}
+  - {fileID: 1015420882}
+  - {fileID: 1194432602}
   m_Father: {fileID: 5625952232717059780}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -426,7 +518,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5625952234789676984}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.22, y: 0.547, z: 0}
+  m_LocalPosition: {x: 1.22, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

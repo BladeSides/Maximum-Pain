@@ -9,7 +9,9 @@ public class EnemyController : MonoBehaviour
 
     [SerializeField] private NavMeshAgent _navMeshAgent;
     [SerializeField] private float _timer = 0f;
-    [SerializeField] private float _timePerAIUpdate = 0.5f;
+    [SerializeField] private float _timePerAIUpdate = 0.1f;
+    [SerializeField] private float _timePerUnawareUpdate = 0.1f;
+    [SerializeField] private float _timePerFollowUpdate = 1f;
     [SerializeField] private float _minimumDistance = 7f;
     [SerializeField] private float _wanderRadius = 5f;
     [SerializeField] private Transform _playerTransform;
@@ -40,6 +42,15 @@ public class EnemyController : MonoBehaviour
     private void FixedUpdate()
     {
         _timer += Time.deltaTime;
+
+        if (_state == State.Unaware)
+        {
+            _timePerAIUpdate = _timePerUnawareUpdate;
+        }
+        else
+        {
+            _timePerAIUpdate = _timePerFollowUpdate;
+        }
 
         if (_timer > _timePerAIUpdate)
         {

@@ -8,7 +8,11 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private CharacterController _characterController;
-    
+
+    [SerializeField] private GameObject _mesh;
+
+    [SerializeField] public bool _isShootDodging;
+
     [SerializeField] private float _maxVelocity = 1f;
     [SerializeField] private float _moveAcceleration = 1f;
     [SerializeField] private float _moveDeceleration = 5f;
@@ -19,6 +23,8 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private float _gravitationalAcceleration;
     [SerializeField] private float _jumpVelocity = 10f;
+
+    [SerializeField] private float _characterControllerDefaultHeight;
 
     [SerializeField] private Transform _rightHostler;
     [SerializeField] private Transform _leftHostler;
@@ -61,6 +67,7 @@ public class PlayerController : MonoBehaviour
         _currentGunType = gun._typeOfGun;
         _guns.Add(gun);
         _rightGun = gun;
+        _characterControllerDefaultHeight = _characterController.height;
     }
 
     // Update is called once per frame
@@ -143,6 +150,27 @@ public class PlayerController : MonoBehaviour
 
         SetGuns();
         DeActivateGuns();
+
+
+        if (Input.GetKeyDown(KeyCode.C) && CanJump())
+        {
+            _playerVelocity = new Vector3(_playerVelocity.x, _jumpVelocity, _playerVelocity.z);
+            _characterController.Move(_jumpVelocity * Vector3.up * Time.deltaTime);
+            Time.timeScale = 0.1f;
+            _characterController.height = _characterControllerDefaultHeight / 2;
+            _isShootDodging = true;
+        }
+        if (_isShootDodging)
+        {
+            _mesh.transform.localRotation = Quaternion.Euler(new Vector3(90, 0, 0));
+        }
+        if (_isShootDodging && IsGrounded())
+        {
+            _characterController.Move(_characterControllerDefaultHeight/2 * Vector3.up);
+            _characterController.height = _characterControllerDefaultHeight;
+            _mesh.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
+            _isShootDodging = false;
+        }
     }
 
     private void DeActivateGuns()
@@ -224,7 +252,7 @@ public class PlayerController : MonoBehaviour
 
     private void SetVerticalVelocity()
     {
-        if (CanJump())
+        if (CanJump() && IsJumping())
         {
             _playerVelocity += Vector3.up * _jumpVelocity;
         }
@@ -245,7 +273,12 @@ public class PlayerController : MonoBehaviour
 
     private bool CanJump()
     {
-        return Input.GetKey(KeyCode.Space) && _characterController.isGrounded && _playerVelocity.y <= 0;
+        return _characterController.isGrounded && _playerVelocity.y <= 0;
+    }
+
+    private bool IsJumping()
+    {
+        return Input.GetKey(KeyCode.Space);
     }
 
     private void SetPlanarVelocity()

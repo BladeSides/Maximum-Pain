@@ -31,6 +31,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] private LayerMask _cameraCollision;
     [SerializeField] private Transform _cameraClipResetPosition;
 
+    [SerializeField] private PlayerController _playerController;
+
     private Vector2 _mouseInput;
     private void Awake()
     {
@@ -115,7 +117,16 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate() //So that camera moves after player
     {
-        transform.root.Rotate(0, _deltaAngleX, 0);
+        if (_playerController._isShootDodging)
+        {
+            _cameraHolder.transform.Rotate(0, _deltaAngleX, 0);
+        }
+        else
+        {
+            transform.root.Rotate(0, _cameraHolder.localRotation.eulerAngles.y, 0); //rotate player towards where the camera was looking when shoot dodging
+            _cameraHolder.localRotation = Quaternion.Euler(_cameraHolder.localRotation.eulerAngles.x, 0,0); //rotate camera back
+            transform.root.Rotate(0, _deltaAngleX, 0); //Rotates player
+        }
         _cameraHolder.transform.Rotate(-_deltaAngleY, 0, 0);
     }
 }

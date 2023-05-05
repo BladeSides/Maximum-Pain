@@ -12,14 +12,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject _mesh;
 
     [SerializeField] public bool _isShootDodging;
+    [SerializeField] public bool _isProne;
+
+    [SerializeField] private float _standupTimer;
 
     [SerializeField] private float _maxVelocity = 1f;
     [SerializeField] private float _moveAcceleration = 1f;
     [SerializeField] private float _moveDeceleration = 5f;
 
-    [SerializeField] private float _groundedDownwardVelocity = 0.01f;
+    [SerializeField] private float _groundedDownwardVelocity = 0.1f;
 
-    [SerializeField] private Vector3 _playerVelocity;
+    [SerializeField] private Vector3 _playerPlanarVelocity;
+    [SerializeField] private Vector3 _playerVerticalVelocity;
 
     [SerializeField] private float _gravitationalAcceleration;
     [SerializeField] private float _jumpVelocity = 10f;
@@ -28,8 +32,8 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private Transform _rightHostler;
     [SerializeField] private Transform _leftHostler;
-    [SerializeField] private Gun _rightGun;
-    [SerializeField] private Gun _leftGun;
+    [SerializeField] public Gun RightGun;
+    [SerializeField] public Gun LeftGun;
 
     [SerializeField] private List<Gun> _guns;
     [SerializeField] private Camera _mainCamera;
@@ -38,7 +42,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _maxHealth = 100f;
 
     [SerializeField] private Gun.TypeOfGun _currentGunType;
-    [SerializeField] private bool _dualWielding;
+    [SerializeField] public bool IsDualWielding;
 
     [SerializeField] private Gun[] _gunPrefabs;
 
@@ -66,7 +70,7 @@ public class PlayerController : MonoBehaviour
         _guns = new List<Gun>();
         _currentGunType = gun._typeOfGun;
         _guns.Add(gun);
-        _rightGun = gun;
+        RightGun = gun;
         _characterControllerDefaultHeight = _characterController.height;
     }
 
@@ -117,9 +121,9 @@ public class PlayerController : MonoBehaviour
                 if ((int)gun._typeOfGun == _nextGunIndex)
                 {
                     print(_nextGunIndex);
-                    _rightGun = gun;
-                    _dualWielding = false;
-                    _leftGun = null;
+                    RightGun = gun;
+                    IsDualWielding = false;
+                    LeftGun = null;
                     _currentGunType = gun._typeOfGun;
                     changedGun = true;
                     print("Changed Gun");
@@ -154,22 +158,47 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.C) && CanJump())
         {
-            _playerVelocity = new Vector3(_playerVelocity.x, _jumpVelocity, _playerVelocity.z);
+            _playerPlanarVelocity = new Vector3(_Input.x, 0, _Input.y);
+            _playerVerticalVelocity = new Vector3(0, _jumpVelocity, 0);
             _characterController.Move(_jumpVelocity * Vector3.up * Time.deltaTime);
             Time.timeScale = 0.1f;
             _characterController.height = _characterControllerDefaultHeight / 2;
             _isShootDodging = true;
+            _playerPlanarVelocity = _playerPlanarVelocity.normalized * _maxVelocity;
         }
         if (_isShootDodging)
         {
-            _mesh.transform.localRotation = Quaternion.Euler(new Vector3(90, 0, 0));
+            if (_playerPlanarVelocity.sqrMagnitude >= 0.25) //Ofset
+            {
+                _mesh.transform.localRotation = Quaternion.Euler(
+                    new Vector3(_playerPlanarVelocity.z, 0, -_playerPlanarVelocity.x).normalized * 90);
+            }
         }
         if (_isShootDodging && IsGrounded())
         {
-            _characterController.Move(_characterControllerDefaultHeight/2 * Vector3.up);
-            _characterController.height = _characterControllerDefaultHeight;
+            _isProne = true;
+        }
+
+        if (_isProne)
+        {
+            _standupTimer += Time.deltaTime;
+        }
+
+        if (_isShootDodging && _isProne && (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)) // Moves when prone
+        {
+            if (_standupTimer > 0.5f)
+            {
+                _characterController.Move(_characterControllerDefaultHeight / 2 * Vector3.up);
+                _characterController.height = _characterControllerDefaultHeight;
+                _isShootDodging = false;
+                _isProne = false;
+                _standupTimer = 0;
+            }
+        }
+
+        if (!_isShootDodging && !_isProne)
+        {
             _mesh.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
-            _isShootDodging = false;
         }
     }
 
@@ -177,16 +206,16 @@ public class PlayerController : MonoBehaviour
     {
         foreach (Gun gun in _guns)
         {
-            if (!_dualWielding)
+            if (!IsDualWielding)
             {
-                if (gun != _rightGun)
+                if (gun != RightGun)
                 {
                     gun.gameObject.SetActive(false);
                 }
             }
             else
             {
-                if (gun != _rightGun && gun != _leftGun)
+                if (gun != RightGun && gun != LeftGun)
                 {
                     gun.gameObject.SetActive(false);
                 }
@@ -196,24 +225,24 @@ public class PlayerController : MonoBehaviour
 
     private void SetGuns()
     {
-        _rightGun.transform.localPosition = Vector3.zero;
-        _rightGun.transform.SetParent(_rightHostler);
-        _rightGun.transform.localRotation = Quaternion.Euler(_mainCamera.transform.rotation.eulerAngles.x, 0, 0);
-        _rightGun.gameObject.SetActive(true);
-        if (_dualWielding)
+        RightGun.transform.localPosition = Vector3.zero;
+        RightGun.transform.SetParent(_rightHostler);
+        RightGun.transform.LookAt(this.transform.position + _mainCamera.transform.forward * 5 + _mainCamera.transform.right);
+        RightGun.gameObject.SetActive(true);
+        if (IsDualWielding)
         {
-            _leftGun.transform.SetParent(_leftHostler);
-            _leftGun.transform.localPosition = Vector3.zero;
-            _leftGun.transform.localRotation = Quaternion.Euler(_mainCamera.transform.rotation.eulerAngles.x, 0, 0);
-            _leftGun.gameObject.SetActive(true);
+            LeftGun.transform.SetParent(_leftHostler);
+            LeftGun.transform.localPosition = Vector3.zero;
+            LeftGun.transform.LookAt(this.transform.position + _mainCamera.transform.forward * 5 + _mainCamera.transform.right);
+            LeftGun.gameObject.SetActive(true);
         }
 
         if (Input.GetMouseButton(0))
         {
-            _rightGun.Shoot(_rightGun.transform.position, "Player");
-            if (_dualWielding)
+            RightGun.Shoot(RightGun.transform.position, "Player");
+            if (IsDualWielding)
             {
-                _leftGun.Shoot(_leftGun.transform.position, "Player");
+                LeftGun.Shoot(LeftGun.transform.position, "Player");
             }
         }
         if (Input.GetKeyDown(KeyCode.Q))
@@ -240,29 +269,29 @@ public class PlayerController : MonoBehaviour
                     gunAmount++;
                 }
 
-                _rightGun = rightGun;
-                _leftGun = leftGun;
+                RightGun = rightGun;
+                LeftGun = leftGun;
             }
             if (gunAmount >= 2)
             {
-                _dualWielding = true;
+                IsDualWielding = true;
             }
         }
     }
 
     private void SetVerticalVelocity()
     {
-        if (CanJump() && IsJumping())
+        if (CanJump() && IsJumping()) //on jump
         {
-            _playerVelocity += Vector3.up * _jumpVelocity;
+            _playerVerticalVelocity += Vector3.up * _jumpVelocity;
         }
-        else if (IsGrounded() == false)
+        else if (IsGrounded() == false) // if falling
         {
-            _playerVelocity += Vector3.down * Time.deltaTime * _gravitationalAcceleration;
+            _playerVerticalVelocity += Vector3.down * Time.deltaTime * _gravitationalAcceleration;
         }
-        else
+        else // if grounded, apply consistent force downwards
         {
-            _playerVelocity = new Vector3(_playerVelocity.x, -_groundedDownwardVelocity, _playerVelocity.z);
+            _playerVerticalVelocity = _groundedDownwardVelocity * Vector3.down;
         }
     }
 
@@ -273,7 +302,7 @@ public class PlayerController : MonoBehaviour
 
     private bool CanJump()
     {
-        return _characterController.isGrounded && _playerVelocity.y <= 0;
+        return _characterController.isGrounded && _playerVerticalVelocity.y <= 0 && !_isProne && !_isShootDodging;
     }
 
     private bool IsJumping()
@@ -283,22 +312,26 @@ public class PlayerController : MonoBehaviour
 
     private void SetPlanarVelocity()
     {
-        _playerVelocity += new Vector3(_Input.x, 0, _Input.y) * _moveAcceleration * Time.deltaTime;
-        if (_playerVelocity.sqrMagnitude > _maxVelocity * _maxVelocity)
+        if (_isShootDodging && !_isProne)
         {
-            _playerVelocity = _playerVelocity.normalized * _maxVelocity;
+            return;
+        }
+        _playerPlanarVelocity += new Vector3(_Input.x, 0, _Input.y) * _moveAcceleration * Time.deltaTime;
+        if (_playerPlanarVelocity.sqrMagnitude > _maxVelocity * _maxVelocity)
+        {
+            _playerPlanarVelocity = _playerPlanarVelocity.normalized * _maxVelocity;
         }
 
-        if (_Input.x == 0 && _Input.y == 0)
+        if (_Input.x == 0 && _Input.y == 0 && (!_isShootDodging || _isProne))
         {
-            Vector3 velocityChange = new Vector3(_playerVelocity.x, 0, _playerVelocity.z) * _moveDeceleration * Time.deltaTime;
-            if (_playerVelocity.sqrMagnitude - velocityChange.sqrMagnitude > 0) //If deceleration won't make it go in opposite direction
+            Vector3 velocityChange = new Vector3(_playerPlanarVelocity.x, 0, _playerPlanarVelocity.z) * _moveDeceleration * Time.deltaTime;
+            if (_playerPlanarVelocity.sqrMagnitude - velocityChange.sqrMagnitude > 0) //If deceleration won't make it go in opposite direction
             {
-                _playerVelocity -= velocityChange;
+                _playerPlanarVelocity -= velocityChange;
             }
             else
             {
-                _playerVelocity = new Vector3(0, _playerVelocity.y, 0);
+                _playerPlanarVelocity = Vector3.zero;
             }
         }
     }
@@ -308,12 +341,12 @@ public class PlayerController : MonoBehaviour
         _Input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         if (Input.GetKeyDown(KeyCode.R))
         {
-            _rightGun.isReloading = true;
-            _rightGun.timer = 0;
-            if (_dualWielding)
+            RightGun.isReloading = true;
+            RightGun.timer = 0;
+            if (IsDualWielding)
             {
-                _leftGun.isReloading = true;
-                _leftGun.timer = 0;
+                LeftGun.isReloading = true;
+                LeftGun.timer = 0;
             }
         }
     }
@@ -321,7 +354,7 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         Vector3 _movement = Vector3.zero;
-        _movement += transform.right * _playerVelocity.x + transform.up * _playerVelocity.y + transform.forward * _playerVelocity.z;
+        _movement += transform.right * _playerPlanarVelocity.x + transform.up * _playerVerticalVelocity.y + transform.forward * _playerPlanarVelocity.z;
         _characterController.Move(_movement * Time.deltaTime);
     }
 

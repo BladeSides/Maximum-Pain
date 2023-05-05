@@ -117,7 +117,7 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate() //So that camera moves after player
     {
-        if (_playerController._isShootDodging)
+        if (_playerController._isShootDodging || _playerController._isProne)
         {
             _cameraHolder.transform.Rotate(0, _deltaAngleX, 0);
         }

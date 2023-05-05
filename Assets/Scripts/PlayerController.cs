@@ -225,6 +225,7 @@ public class PlayerController : MonoBehaviour
 
     private void SetGuns()
     {
+        DistributeAmmo();
         RightGun.transform.localPosition = Vector3.zero;
         RightGun.transform.SetParent(_rightHostler);
         RightGun.transform.LookAt(this.transform.position + _mainCamera.transform.forward * 5 + _mainCamera.transform.right);
@@ -239,43 +240,53 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetMouseButton(0))
         {
-            RightGun.Shoot(RightGun.transform.position, "Player");
-            if (IsDualWielding)
-            {
-                LeftGun.Shoot(LeftGun.transform.position, "Player");
-            }
+            Shoot();
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            int gunAmount = 0;
-            Gun.TypeOfGun _guntype = _currentGunType;
-            bool setRightGun = false;
-            Gun leftGun = null, rightGun = null;
-            foreach (Gun gun in _guns)
-            {
-                if (gun._typeOfGun == _guntype)
-                {
-                    if (rightGun == null && setRightGun == false)
-                    {
-                        rightGun = gun;
-                        setRightGun = true;
-                        Debug.Log("Set Right Gun"); 
-                    }
-                    else if (setRightGun == true)
-                    {
-                        leftGun = gun;
-                        Debug.LogWarning("Set Left Gun");
-                    }
-                    gunAmount++;
-                }
+            DualWield();
+        }
+    }
 
-                RightGun = rightGun;
-                LeftGun = leftGun;
-            }
-            if (gunAmount >= 2)
+    private void DualWield()
+    {
+        int gunAmount = 0;
+        Gun.TypeOfGun _guntype = _currentGunType;
+        bool setRightGun = false;
+        Gun leftGun = null, rightGun = null;
+        foreach (Gun gun in _guns)
+        {
+            if (gun._typeOfGun == _guntype)
             {
-                IsDualWielding = true;
+                if (rightGun == null && setRightGun == false)
+                {
+                    rightGun = gun;
+                    setRightGun = true;
+                    Debug.Log("Set Right Gun");
+                }
+                else if (setRightGun == true)
+                {
+                    leftGun = gun;
+                    Debug.LogWarning("Set Left Gun");
+                }
+                gunAmount++;
             }
+
+            RightGun = rightGun;
+            LeftGun = leftGun;
+        }
+        if (gunAmount >= 2)
+        {
+            IsDualWielding = true;
+        }
+    }
+
+    private void Shoot()
+    {
+        RightGun.Shoot(RightGun.transform.position, "Player");
+        if (IsDualWielding)
+        {
+            LeftGun.Shoot(LeftGun.transform.position, "Player");
         }
     }
 
@@ -316,7 +327,10 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
-        _playerPlanarVelocity += new Vector3(_Input.x, 0, _Input.y) * _moveAcceleration * Time.deltaTime;
+        if (!_isProne) //Prevents sliding after shoot dodging while laying on the ground
+        {
+            _playerPlanarVelocity += new Vector3(_Input.x, 0, _Input.y) * _moveAcceleration * Time.deltaTime;
+        }
         if (_playerPlanarVelocity.sqrMagnitude > _maxVelocity * _maxVelocity)
         {
             _playerPlanarVelocity = _playerPlanarVelocity.normalized * _maxVelocity;
@@ -341,12 +355,34 @@ public class PlayerController : MonoBehaviour
         _Input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         if (Input.GetKeyDown(KeyCode.R))
         {
-            RightGun.isReloading = true;
-            RightGun.timer = 0;
             if (IsDualWielding)
             {
+                DistributeAmmo();
                 LeftGun.isReloading = true;
                 LeftGun.timer = 0;
+            }
+            RightGun.isReloading = true;
+            RightGun.timer = 0;
+        }
+    }
+
+    private void DistributeAmmo()
+    {
+        int totalAmmo = 0;
+        int totalGuns = 0;
+        foreach (Gun gun in _guns)
+        {
+            if (gun._typeOfGun == _currentGunType)
+            {
+                totalAmmo += gun.ammoInReserve;
+                totalGuns++;
+            }
+        }
+        foreach (Gun gun in _guns)
+        {
+            if (gun._typeOfGun == _currentGunType)
+            {
+                gun.ammoInReserve = totalAmmo / totalGuns;
             }
         }
     }

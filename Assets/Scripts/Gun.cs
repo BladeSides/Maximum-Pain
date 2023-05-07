@@ -26,6 +26,7 @@ public class Gun : MonoBehaviour
     public float damage;
     public GameObject _player;
     private Rigidbody _rigidBody;
+    public ParticleSystem _muzzleFlash;
 
     private void Awake()
     {
@@ -34,6 +35,7 @@ public class Gun : MonoBehaviour
     void Start()
     {
         _player = GameObject.FindGameObjectWithTag("Player");
+        _muzzleFlash.Pause(); 
     }
 
     // Update is called once per frame
@@ -69,10 +71,13 @@ public class Gun : MonoBehaviour
                         Debug.DrawLine(Origin, hit.point, Color.red, 0.5f);
                         if (hit.transform.gameObject.tag == "Enemy")
                         {
-                            hit.transform.gameObject.GetComponent<EnemyController>().Damage(damage);
+                            EnemyController ec = hit.transform.gameObject.GetComponent<EnemyController>();
+                            ec.Damage(damage);
+                            Instantiate(ec._bloodParticles, hit.point, Quaternion.identity);
                         }
                     }
                     ammoInGun--;
+                    _muzzleFlash.Play();
                 }
             }
             if (Owner == "Enemy")
@@ -88,10 +93,12 @@ public class Gun : MonoBehaviour
                             if (hit.transform.gameObject.TryGetComponent<PlayerController>(out PlayerController pc))
                             {
                                 pc.Damage(damage);
+                                Instantiate(pc._bloodParticleSystem, hit.point, Quaternion.identity);
                             }
                         }
                     }
                     ammoInGun--;
+                    _muzzleFlash.Play();
                 }
             }
 

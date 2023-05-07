@@ -20,6 +20,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float _health = 100f;
     [SerializeField] private Transform _hostler;
     [SerializeField] private Gun _gun;
+    [SerializeField] public ParticleSystem _bloodParticles;
     
 
     private enum State 

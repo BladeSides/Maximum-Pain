@@ -49,6 +49,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Gun.TypeOfGun[] _gunOrder = { Gun.TypeOfGun.Pistol, Gun.TypeOfGun.SMG, Gun.TypeOfGun.Shotgun };
 
     [SerializeField] private bool _isSlowMotion = false;
+    public ParticleSystem _bloodParticleSystem;
 
     private Vector2 _Input = Vector2.zero;
 
@@ -283,10 +284,10 @@ public class PlayerController : MonoBehaviour
 
     private void Shoot()
     {
-        RightGun.Shoot(RightGun.transform.position, "Player");
+        RightGun.Shoot(this.transform.position, "Player");
         if (IsDualWielding)
         {
-            LeftGun.Shoot(LeftGun.transform.position, "Player");
+            LeftGun.Shoot(this.transform.position, "Player");
         }
     }
 

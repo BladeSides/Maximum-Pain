@@ -54,6 +54,15 @@ public class CameraController : MonoBehaviour
         _deltaAngleX = _mouseInput.x * Time.unscaledDeltaTime * _mouseSenstivity;
         _angleX += _deltaAngleX;
         
+        if (_angleX < 0)
+        {
+            _angleX += 360;
+        }
+        if (_angleX > 360)
+        {
+            _angleX -= 360;
+        }
+        
         float _testDeltaY = _mouseInput.y * Time.unscaledDeltaTime * _mouseSenstivity;
         if (_testDeltaY + _angleY < _yLimits.y && _testDeltaY + _angleY > _yLimits.x)
         {
@@ -117,11 +126,11 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate() //So that camera moves after player
     {
-        if (_playerController._isShootDodging || _playerController._isProne)
+        /*if (_playerController._isShootDodging || _playerController._isProne)
         {
             _cameraHolder.transform.Rotate(0, _deltaAngleX, 0);
-        }
-        else
+        }*/
+        //else
         {
             transform.root.Rotate(0, _cameraHolder.localRotation.eulerAngles.y, 0); //rotate player towards where the camera was looking when shoot dodging
             _cameraHolder.localRotation = Quaternion.Euler(_cameraHolder.localRotation.eulerAngles.x, 0,0); //rotate camera back

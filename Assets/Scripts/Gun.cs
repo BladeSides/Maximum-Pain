@@ -109,7 +109,7 @@ public class Gun : MonoBehaviour
                 if (timer > fireRate)
                 {
                     timer = 0;
-                    if (Physics.Raycast(Origin, (_player.transform.position - Origin).normalized, out RaycastHit hit))
+                    if (Physics.Raycast(Origin, (_player.transform.position - Origin).normalized - UnityEngine.Random.insideUnitSphere * 0.5f, out RaycastHit hit))
                     {
                         Debug.DrawLine(Origin, hit.point, Color.green, 0.5f);
                         if (hit.transform.root.tag == "Player")
@@ -120,17 +120,23 @@ public class Gun : MonoBehaviour
                                 Instantiate(pc._bloodParticleSystem, hit.point, Quaternion.identity);
                             }
                         }
+                        else if (hit.collider.isTrigger == false && hit.transform.root.tag != "Enemy")
+                        {
+                            Vector3 direction = (hit.point - Origin).normalized;
+                            Instantiate(_bulletDecal, hit.point, Quaternion.FromToRotation(Vector3.forward, hit.normal));
+                        }
+                        LineRenderer lr = Instantiate(_bulletTrail, Vector3.zero, Quaternion.identity);
+                        lr.SetPosition(0, this.transform.position);
+                        lr.SetPosition(1, hit.point);
                     }
-                    else if (hit.collider.isTrigger == false)
+                    else
                     {
-                        Vector3 direction = (hit.point - Origin).normalized;
-                        Instantiate(_bulletDecal, hit.point, Quaternion.FromToRotation(Vector3.forward, hit.normal));
+                        LineRenderer lr = Instantiate(_bulletTrail, Vector3.zero, Quaternion.identity);
+                        lr.SetPosition(0, this.transform.position);
+                        lr.SetPosition(1, (_player.transform.position - Origin).normalized - UnityEngine.Random.onUnitSphere * 5);
                     }
                     ammoInGun--;
                     _muzzleFlash.Play();
-                    LineRenderer lr = Instantiate(_bulletTrail, Vector3.zero, Quaternion.identity);
-                    lr.SetPosition(0, this.transform.position);
-                    lr.SetPosition(1, hit.point);
                 }
             }
 

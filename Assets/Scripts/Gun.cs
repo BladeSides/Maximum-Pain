@@ -27,15 +27,21 @@ public class Gun : MonoBehaviour
     public GameObject _player;
     private Rigidbody _rigidBody;
     public ParticleSystem _muzzleFlash;
+    public GameObject _bulletDecal;
+    public LineRenderer _bulletTrail;
 
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody>();
     }
+    private void OnEnable()
+    {
+        _muzzleFlash.Pause();
+    }
+
     void Start()
     {
         _player = GameObject.FindGameObjectWithTag("Player");
-        _muzzleFlash.Pause(); 
     }
 
     // Update is called once per frame
@@ -59,6 +65,10 @@ public class Gun : MonoBehaviour
 
     public void Shoot(Vector3 Origin, string Owner)
     {
+        if (isReloading && ammoInGun >= clipSize)
+        {
+            isReloading = false; //safety check
+        }
         if (CanShoot())
         {
             if (Owner == "Player")
@@ -75,6 +85,20 @@ public class Gun : MonoBehaviour
                             ec.Damage(damage);
                             Instantiate(ec._bloodParticles, hit.point, Quaternion.identity);
                         }
+                        else if (hit.collider.isTrigger == false) //Prevents decals from spawning at the the trigger boxes for doors
+                        {
+                            Vector3 direction = (hit.point - Origin).normalized;
+                            Instantiate(_bulletDecal, hit.point, Quaternion.FromToRotation(Vector3.forward, hit.normal));
+                        }
+                        LineRenderer lr = Instantiate(_bulletTrail, Vector3.zero, Quaternion.identity);
+                        lr.SetPosition(0, this.transform.position);
+                        lr.SetPosition(1, hit.point);
+                    }
+                    else
+                    {
+                        LineRenderer lr = Instantiate(_bulletTrail, Vector3.zero, Quaternion.identity);
+                        lr.SetPosition(0, this.transform.position);
+                        lr.SetPosition(1, Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 100f)));
                     }
                     ammoInGun--;
                     _muzzleFlash.Play();
@@ -97,8 +121,16 @@ public class Gun : MonoBehaviour
                             }
                         }
                     }
+                    else if (hit.collider.isTrigger == false)
+                    {
+                        Vector3 direction = (hit.point - Origin).normalized;
+                        Instantiate(_bulletDecal, hit.point, Quaternion.FromToRotation(Vector3.forward, hit.normal));
+                    }
                     ammoInGun--;
                     _muzzleFlash.Play();
+                    LineRenderer lr = Instantiate(_bulletTrail, Vector3.zero, Quaternion.identity);
+                    lr.SetPosition(0, this.transform.position);
+                    lr.SetPosition(1, hit.point);
                 }
             }
 

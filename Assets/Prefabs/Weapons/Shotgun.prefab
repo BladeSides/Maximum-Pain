@@ -162,6 +162,8 @@ MonoBehaviour:
   damage: 50
   _player: {fileID: 0}
   _muzzleFlash: {fileID: 4967501937868726378}
+  _bulletDecal: {fileID: 3751758273044406993, guid: 4fe0c01cd4069f54faf0c87895a2a490, type: 3}
+  _bulletTrail: {fileID: 3281752868050438124, guid: 6485f7e4a7652fc4ba68f2d2237f4a14, type: 3}
 --- !u!54 &5944592486909444065
 Rigidbody:
   m_ObjectHideFlags: 0

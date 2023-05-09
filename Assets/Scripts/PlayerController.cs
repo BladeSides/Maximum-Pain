@@ -42,6 +42,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _maxHealth = 100f;
 
     [SerializeField] private Gun.TypeOfGun _currentGunType;
+
+    [SerializeField] private float _angleRotateSpeed = 3f;
+
     [SerializeField] public bool IsDualWielding;
 
     [SerializeField] private Gun[] _gunPrefabs;
@@ -171,8 +174,9 @@ public class PlayerController : MonoBehaviour
         {
             if (_playerPlanarVelocity.sqrMagnitude >= 0.25) //Ofset
             {
-                _mesh.transform.localRotation = Quaternion.Euler(
+                Quaternion targetAngle = Quaternion.Euler(
                     new Vector3(_playerPlanarVelocity.z, 0, -_playerPlanarVelocity.x).normalized * 90);
+                _mesh.transform.localRotation = RotateAngle(_mesh.transform.localRotation, targetAngle, _angleRotateSpeed * Time.deltaTime);
             }
         }
         if (_isShootDodging && IsGrounded())
@@ -199,7 +203,7 @@ public class PlayerController : MonoBehaviour
 
         if (!_isShootDodging && !_isProne)
         {
-            _mesh.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
+            _mesh.transform.localRotation = RotateAngle(_mesh.transform.localRotation, Quaternion.Euler(new Vector3(0, 0, 0)),_angleRotateSpeed * Time.deltaTime);
         }
     }
 
@@ -371,20 +375,44 @@ public class PlayerController : MonoBehaviour
     {
         int totalAmmo = 0;
         int totalGuns = 0;
-        foreach (Gun gun in _guns)
+
+        if (IsDualWielding)
         {
-            if (gun._typeOfGun == _currentGunType)
+            foreach (Gun gun in _guns)
             {
-                totalAmmo += gun.ammoInReserve;
-                totalGuns++;
+                if (gun._typeOfGun == _currentGunType)
+                {
+                    totalAmmo += gun.ammoInReserve;
+                    totalGuns++;
+                }
+            }
+            foreach (Gun gun in _guns)
+            {
+                if (gun._typeOfGun == _currentGunType)
+                {
+                    gun.ammoInReserve = totalAmmo / totalGuns;
+                }
             }
         }
-        foreach (Gun gun in _guns)
+
+        else if (RightGun.dualWieldable)
         {
-            if (gun._typeOfGun == _currentGunType)
+            foreach (Gun gun in _guns)
             {
-                gun.ammoInReserve = totalAmmo / totalGuns;
+                if (gun._typeOfGun == _currentGunType)
+                {
+                    totalAmmo += gun.ammoInReserve;
+                    totalGuns++;
+                }
             }
+            foreach (Gun gun in _guns)
+            {
+                if (gun._typeOfGun == _currentGunType)
+                {
+                    gun.ammoInReserve = 0;
+                }
+            }
+            RightGun.ammoInReserve = totalAmmo;
         }
     }
 
@@ -410,6 +438,7 @@ public class PlayerController : MonoBehaviour
             if (gun._typeOfGun == gunToAdd._typeOfGun)
             {
                 gunCount++;
+                gunToAddAmmoTo = gun;
             }
         }
         if (gunCount > maxGunCount)
@@ -418,6 +447,7 @@ public class PlayerController : MonoBehaviour
             {
                 gunToAddAmmoTo.ammoInReserve += gunToAdd.clipSize;
                 Destroy(gunToAdd.gameObject);
+                Debug.Log("Destroyed");
             }
         }
         else
@@ -425,5 +455,10 @@ public class PlayerController : MonoBehaviour
             _guns.Add(gunToAdd);
             gunToAdd.isHeld = true;
         }
+    }
+
+    Quaternion RotateAngle(Quaternion initialAngle, Quaternion targetAngle, float rotationSpeed)
+    {
+        return Quaternion.Slerp(initialAngle, targetAngle, rotationSpeed);
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(Rigidbody))]
 public class EnemyController : MonoBehaviour
 {
 
@@ -21,7 +22,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private Transform _hostler;
     [SerializeField] private Gun _gun;
     [SerializeField] public ParticleSystem _bloodParticles;
-    
+    [SerializeField] public Rigidbody _rigidBody;    
 
     private enum State 
     { 
@@ -34,10 +35,12 @@ public class EnemyController : MonoBehaviour
     private void Awake()
     {
         _navMeshAgent = GetComponent<NavMeshAgent>();
+        _rigidBody = GetComponent<Rigidbody>();
     }
     void Start()
     {
         _playerTransform = GameObject.FindWithTag("Player").transform;
+        _rigidBody.isKinematic = true;
     }
 
     private void FixedUpdate()
@@ -59,18 +62,22 @@ public class EnemyController : MonoBehaviour
             _timer = 0f;
         }
 
+        if (_state == State.Following)
+        {
+            _gun.Shoot(_gun.transform.position, "Enemy");
+            this.transform.LookAt(new Vector3(_playerTransform.position.x, this.transform.position.y, _playerTransform.position.z));
+        }
+
         if (_health <= 0)
         {
             _gun.transform.parent = null;
             _gun.isHeld = false;
             _gun.Owner = null;
-            Destroy(this.gameObject);
-        }
+            _rigidBody.isKinematic = false;
+            _rigidBody.AddForce(this.transform.forward * -1, ForceMode.Impulse);
 
-        if (_state == State.Following)
-        {
-            _gun.Shoot(_gun.transform.position, "Enemy");
-            this.transform.LookAt(new Vector3(_playerTransform.position.x, this.transform.position.y, _playerTransform.position.z));
+            Destroy(this);
+            Destroy(_navMeshAgent);
         }
     }
 

@@ -81,9 +81,11 @@ public class Gun : MonoBehaviour
                         Debug.DrawLine(Origin, hit.point, Color.red, 0.5f);
                         if (hit.transform.gameObject.tag == "Enemy")
                         {
-                            EnemyController ec = hit.transform.gameObject.GetComponent<EnemyController>();
-                            ec.Damage(damage);
-                            Instantiate(ec._bloodParticles, hit.point, Quaternion.identity);
+                            if (hit.transform.gameObject.TryGetComponent<EnemyController>(out EnemyController ec))
+                            {
+                                ec.Damage(damage);
+                                Instantiate(ec._bloodParticles, hit.point, Quaternion.identity);
+                            }
                         }
                         else if (hit.collider.isTrigger == false) //Prevents decals from spawning at the the trigger boxes for doors
                         {

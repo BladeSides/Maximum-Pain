@@ -111,15 +111,17 @@ public class Gun : MonoBehaviour
                 if (timer > fireRate)
                 {
                     timer = 0;
-                    if (Physics.Raycast(Origin, (_player.transform.position - Origin).normalized - UnityEngine.Random.insideUnitSphere * 0.5f, out RaycastHit hit))
+                    //Make less likely to hit player when moving
+                    if (Physics.Raycast(Origin, (_player.transform.position - Origin).normalized - UnityEngine.Random.insideUnitSphere * 
+                        (_player.GetComponent<PlayerMovement>().movement.magnitude/5 + 0.25f), out RaycastHit hit))
                     {
                         Debug.DrawLine(Origin, hit.point, Color.green, 0.5f);
                         if (hit.transform.root.tag == "Player")
                         {
-                            if (hit.transform.gameObject.TryGetComponent<PlayerController>(out PlayerController pc))
+                            if (hit.transform.gameObject.TryGetComponent<PlayerManager>(out PlayerManager pm))
                             {
-                                pc.Damage(damage);
-                                Instantiate(pc._bloodParticleSystem, hit.point, Quaternion.identity);
+                                pm.Damage(damage);
+                                Instantiate(pm.bloodParticleSystem, hit.point, Quaternion.identity);
                             }
                         }
                         else if (hit.collider.isTrigger == false && hit.transform.root.tag != "Enemy")
@@ -191,7 +193,7 @@ public class Gun : MonoBehaviour
         {
             if (other.transform.root.tag == "Player")
             {
-                _player.gameObject.GetComponent<PlayerController>().AddGun(this);
+                _player.gameObject.GetComponent<PlayerGunManager>().AddGun(this);
             }
         }
     }

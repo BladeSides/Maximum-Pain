@@ -31,7 +31,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] private LayerMask _cameraCollision;
     [SerializeField] private Transform _cameraClipResetPosition;
 
-    [SerializeField] private PlayerController _playerController;
+    [SerializeField] private PlayerGunManager _playerGunManager;
+    [SerializeField] private PlayerMovement _playerMovement;
 
     private Vector2 _mouseInput;
     private void Awake()
@@ -127,7 +128,7 @@ public class CameraController : MonoBehaviour
     private void LateUpdate() //So that camera moves after player
     {
         //Make sure the mesh doesn't rotate when shootdodging
-        if (_playerController._isShootDodging || _playerController._isProne) 
+        if (_playerMovement._isShootDodging || _playerMovement._isProne) 
         {
             _cameraHolder.transform.Rotate(0, _deltaAngleX, 0);
             _cameraHolder.rotation = Quaternion.Euler(-_angleY, _cameraHolder.rotation.eulerAngles.y, 0);

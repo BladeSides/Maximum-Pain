@@ -74,6 +74,8 @@ GameObject:
   - component: {fileID: 5625952232717059782}
   - component: {fileID: 5625952232717059781}
   - component: {fileID: 525875115}
+  - component: {fileID: 5625952233166385519}
+  - component: {fileID: 6825033836137008925}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -128,35 +130,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86f75a881af72254bb25e350c327b344, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mesh: {fileID: 5625952233127625762}
-  _isShootDodging: 0
-  _isProne: 0
-  _standupTimer: 0
-  _maxVelocity: 10
-  _moveAcceleration: 15
-  _moveDeceleration: 45
-  _groundedDownwardVelocity: 0.01
-  _playerPlanarVelocity: {x: 0, y: 0, z: 0}
-  _playerVerticalVelocity: {x: 0, y: 0, z: 0}
-  _gravitationalAcceleration: 0
-  _jumpVelocity: 5
-  _characterControllerDefaultHeight: 0
   _rightHostler: {fileID: 1015420882}
   _leftHostler: {fileID: 1194432602}
   RightGun: {fileID: 0}
   LeftGun: {fileID: 0}
-  _guns: []
-  _mainCamera: {fileID: 0}
   _health: 100
   _maxHealth: 100
+  _guns: []
+  _mainCamera: {fileID: 0}
   _currentGunType: 0
-  _angleRotateSpeed: 3
   IsDualWielding: 0
   _gunPrefabs:
   - {fileID: 6260467907305240385, guid: e89f67191c499104383f42dc922b6f92, type: 3}
   _gunOrder: 000000000100000002000000
   _isSlowMotion: 0
-  _shootDodgeDirection: {x: 0, y: 0, z: 0}
   _bloodParticleSystem: {fileID: 128624206981211083, guid: 5bba249c0808bf948b6bee3e42bd5a23, type: 3}
 --- !u!136 &525875115
 CapsuleCollider:
@@ -172,6 +159,45 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 2
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5625952233166385519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5625952232717059787}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03a9791022747bf4998a456ffefc47e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerPlanarVelocity: {x: 0, y: 0, z: 0}
+  _playerVerticalVelocity: {x: 0, y: 0, z: 0}
+  _standupTimer: 0
+  _shootDodgeDirection: {x: 0, y: 0, z: 0}
+  _isShootDodging: 0
+  _isProne: 0
+  _gravitationalAcceleration: 0
+  _maxVelocity: 10
+  _moveAcceleration: 10
+  _moveDeceleration: 20
+  _groundedDownwardVelocity: 0.1
+  _jumpVelocity: 5
+  _characterControllerDefaultHeight: 0
+  _angleRotateSpeed: 3
+  _mesh: {fileID: 5625952233127625762}
+--- !u!114 &6825033836137008925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5625952232717059787}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcdcffe9331131540961f65f34309c8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5625952232775998084
 GameObject:
   m_ObjectHideFlags: 0
@@ -504,7 +530,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   _cameraClipResetPosition: {fileID: 5625952232808083813}
-  _playerController: {fileID: 5625952232717059781}
+  _playerGunManager: {fileID: 0}
+  _playerMovement: {fileID: 5625952233166385519}
 --- !u!1 &5625952234789676984
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(TextMeshProUGUI))]
 public class GunText : MonoBehaviour
 {
-    private PlayerController _playerController;
+    private PlayerGunManager _playerGunManager;
     private TextMeshProUGUI _text;
     // Start is called before the first frame update
     private void Awake()
@@ -15,30 +15,30 @@ public class GunText : MonoBehaviour
     }
     void Start()
     {
-        if (_playerController == null)
+        if (_playerGunManager == null)
         {
-            _playerController = FindAnyObjectByType<PlayerController>();
+            _playerGunManager = FindAnyObjectByType<PlayerGunManager>();
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (_playerController.IsDualWielding)
+        if (_playerGunManager.IsDualWielding)
         {
-            _text.SetText(_playerController.RightGun._typeOfGun.ToString()
-            + "\nAmmo: " + _playerController.RightGun.ammoInGun + "/" +
-            _playerController.RightGun.ammoInReserve + "\n" + 
-            _playerController.LeftGun._typeOfGun.ToString()
-            + "\nAmmo: " + _playerController.LeftGun.ammoInGun + "/" +
-            _playerController.LeftGun.ammoInReserve);
+            _text.SetText(_playerGunManager.RightGun._typeOfGun.ToString()
+            + "\nAmmo: " + _playerGunManager.RightGun.ammoInGun + "/" +
+            _playerGunManager.RightGun.ammoInReserve + "\n" +
+            _playerGunManager.LeftGun._typeOfGun.ToString()
+            + "\nAmmo: " + _playerGunManager.LeftGun.ammoInGun + "/" +
+            _playerGunManager.LeftGun.ammoInReserve);
 
         }
         else
         {
-            _text.SetText(_playerController.RightGun._typeOfGun.ToString() 
-                + "\nAmmo: " + _playerController.RightGun.ammoInGun + "/" + 
-                _playerController.RightGun.ammoInReserve);
+            _text.SetText(_playerGunManager.RightGun._typeOfGun.ToString() 
+                + "\nAmmo: " + _playerGunManager.RightGun.ammoInGun + "/" +
+                _playerGunManager.RightGun.ammoInReserve);
         }
     }
 }

@@ -3,33 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController))]
 
-public class PlayerController : MonoBehaviour
+public class PlayerGunManager : MonoBehaviour
 {
-    private CharacterController _characterController;
-
-    [SerializeField] private GameObject _mesh;
-
-    [SerializeField] public bool _isShootDodging;
-    [SerializeField] public bool _isProne;
-
-    [SerializeField] private float _standupTimer;
-
-    [SerializeField] private float _maxVelocity = 1f;
-    [SerializeField] private float _moveAcceleration = 1f;
-    [SerializeField] private float _moveDeceleration = 5f;
-
-    [SerializeField] private float _groundedDownwardVelocity = 0.1f;
-
-    [SerializeField] private Vector3 _playerPlanarVelocity;
-    [SerializeField] private Vector3 _playerVerticalVelocity;
-
-    [SerializeField] private float _gravitationalAcceleration;
-    [SerializeField] private float _jumpVelocity = 10f;
-
-    [SerializeField] private float _characterControllerDefaultHeight;
-
     [SerializeField] private Transform _rightHostler;
     [SerializeField] private Transform _leftHostler;
     [SerializeField] public Gun RightGun;
@@ -38,12 +14,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private List<Gun> _guns;
     [SerializeField] private Camera _mainCamera;
 
-    [SerializeField] private float _health = 100f;
-    [SerializeField] private float _maxHealth = 100f;
-
     [SerializeField] private Gun.TypeOfGun _currentGunType;
-
-    [SerializeField] private float _angleRotateSpeed = 3f;
 
     [SerializeField] public bool IsDualWielding;
 
@@ -51,34 +22,20 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private Gun.TypeOfGun[] _gunOrder = { Gun.TypeOfGun.Pistol, Gun.TypeOfGun.SMG, Gun.TypeOfGun.Shotgun };
 
-    [SerializeField] private bool _isSlowMotion = false;
 
-    [SerializeField] private Vector3 _shootDodgeDirection;
-
-    public ParticleSystem _bloodParticleSystem;
-
-    private Vector2 _Input = Vector2.zero;
-
-    private void Awake()
-    {
-        _characterController = GetComponent<CharacterController>();
-    }
     void Start()
     {
-        _gravitationalAcceleration = Physics.gravity.magnitude;
         Cursor.lockState = CursorLockMode.Locked;
         if (_mainCamera == null)
         {
             _mainCamera = Camera.main;
         }
-        _health = _maxHealth;
 
         Gun gun = Instantiate(_gunPrefabs[0]);
         _guns = new List<Gun>();
         _currentGunType = gun._typeOfGun;
         _guns.Add(gun);
         RightGun = gun;
-        _characterControllerDefaultHeight = _characterController.height;
     }
 
     // Update is called once per frame
@@ -137,78 +94,10 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            _isSlowMotion = !_isSlowMotion;
-        }
-
-        if (_isSlowMotion)
-        {
-            Time.timeScale = 0.25f;
-            Time.fixedDeltaTime = 0.02f * 0.25f;
-        }
-        else
-        {
-            Time.timeScale = 1f;
-            Time.fixedDeltaTime = 0.02f;
-        }
         SetInput();
-
-        SetPlanarVelocity(); //As in, not jumping on the Y-Axis
-
-        SetVerticalVelocity();
 
         SetGuns();
         DeActivateGuns();
-
-
-        if (Input.GetKeyDown(KeyCode.C) && CanJump())
-        {
-            _playerPlanarVelocity = new Vector3(_Input.x, 0, _Input.y);
-            _playerVerticalVelocity = new Vector3(0, _jumpVelocity, 0);
-            _characterController.Move(_jumpVelocity * Vector3.up * Time.deltaTime);
-            Time.timeScale = 0.1f;
-            _characterController.height = _characterControllerDefaultHeight / 2;
-            _isShootDodging = true;
-            _shootDodgeDirection = this.transform.forward;
-            _playerPlanarVelocity = _playerPlanarVelocity.normalized * _maxVelocity;
-        }
-        if (_isShootDodging)
-        {
-            if (_playerPlanarVelocity.sqrMagnitude >= 0.25) //Ofset
-            {
-                Quaternion targetAngle = Quaternion.Euler(
-                    new Vector3(_playerPlanarVelocity.z, 0, -_playerPlanarVelocity.x).normalized * 90);
-                _mesh.transform.localRotation = RotateAngle(_mesh.transform.localRotation, targetAngle, _angleRotateSpeed * Time.deltaTime);
-            }
-        }
-        if (_isShootDodging && IsGrounded())
-        {
-            _isProne = true;
-        }
-
-        if (_isProne)
-        {
-            _standupTimer += Time.deltaTime;
-        }
-
-        if (_isShootDodging && _isProne && (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)) // Moves when prone
-        {
-            if (_standupTimer > 0.5f)
-            {
-                _characterController.Move(_characterControllerDefaultHeight / 2 * Vector3.up);
-                _characterController.height = _characterControllerDefaultHeight;
-                _isShootDodging = false;
-                _isProne = false;
-                _standupTimer = 0;
-            }
-        }
-
-        if (!_isShootDodging && !_isProne) //Make player stand up
-        {
-            _mesh.transform.localRotation = RotateAngle(_mesh.transform.localRotation, Quaternion.Euler(new Vector3(0, 0, 0)),_angleRotateSpeed * Time.deltaTime);
-        }
     }
 
     private void DeActivateGuns()
@@ -299,69 +188,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void SetVerticalVelocity()
-    {
-        if (CanJump() && IsJumping()) //on jump
-        {
-            _playerVerticalVelocity += Vector3.up * _jumpVelocity;
-        }
-        else if (IsGrounded() == false) // if falling
-        {
-            _playerVerticalVelocity += Vector3.down * Time.deltaTime * _gravitationalAcceleration;
-        }
-        else // if grounded, apply consistent force downwards
-        {
-            _playerVerticalVelocity = _groundedDownwardVelocity * Vector3.down;
-        }
-    }
-
-    private bool IsGrounded()
-    {
-        return _characterController.isGrounded;
-    }
-
-    private bool CanJump()
-    {
-        return _characterController.isGrounded && _playerVerticalVelocity.y <= 0 && !_isProne && !_isShootDodging;
-    }
-
-    private bool IsJumping()
-    {
-        return Input.GetKey(KeyCode.Space);
-    }
-
-    private void SetPlanarVelocity()
-    {
-        if (_isShootDodging && !_isProne)
-        {
-            return;
-        }
-        if (!_isProne) //Prevents sliding after shoot dodging while laying on the ground
-        {
-            _playerPlanarVelocity += new Vector3(_Input.x, 0, _Input.y) * _moveAcceleration * Time.deltaTime;
-        }
-        if (_playerPlanarVelocity.sqrMagnitude > _maxVelocity * _maxVelocity)
-        {
-            _playerPlanarVelocity = _playerPlanarVelocity.normalized * _maxVelocity;
-        }
-
-        if (_Input.x == 0 && _Input.y == 0 && (!_isShootDodging || _isProne))
-        {
-            Vector3 velocityChange = new Vector3(_playerPlanarVelocity.x, 0, _playerPlanarVelocity.z) * _moveDeceleration * Time.deltaTime;
-            if (_playerPlanarVelocity.sqrMagnitude - velocityChange.sqrMagnitude > 0) //If deceleration won't make it go in opposite direction
-            {
-                _playerPlanarVelocity -= velocityChange;
-            }
-            else
-            {
-                _playerPlanarVelocity = Vector3.zero;
-            }
-        }
-    }
 
     private void SetInput()
     {
-        _Input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         if (Input.GetKeyDown(KeyCode.R))
         {
             if (IsDualWielding)
@@ -419,18 +248,6 @@ public class PlayerController : MonoBehaviour
             RightGun.ammoInReserve = totalAmmo;
         }
     }
-    
-    private void FixedUpdate()
-    {
-        Vector3 _movement = Vector3.zero;
-        _movement += transform.right * _playerPlanarVelocity.x + transform.up * _playerVerticalVelocity.y + transform.forward * _playerPlanarVelocity.z;
-        _characterController.Move(_movement * Time.deltaTime);
-    }
-
-    public void Damage(float damageAmount)
-    {
-        _health -= damageAmount;
-    }
 
     public void AddGun(Gun gunToAdd)
     {
@@ -459,10 +276,5 @@ public class PlayerController : MonoBehaviour
             _guns.Add(gunToAdd);
             gunToAdd.isHeld = true;
         }
-    }
-
-    Quaternion RotateAngle(Quaternion initialAngle, Quaternion targetAngle, float rotationSpeed)
-    {
-        return Quaternion.Slerp(initialAngle, targetAngle, rotationSpeed);
     }
 }

@@ -52,6 +52,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Gun.TypeOfGun[] _gunOrder = { Gun.TypeOfGun.Pistol, Gun.TypeOfGun.SMG, Gun.TypeOfGun.Shotgun };
 
     [SerializeField] private bool _isSlowMotion = false;
+
+    [SerializeField] private Vector3 _shootDodgeDirection;
+
     public ParticleSystem _bloodParticleSystem;
 
     private Vector2 _Input = Vector2.zero;
@@ -168,6 +171,7 @@ public class PlayerController : MonoBehaviour
             Time.timeScale = 0.1f;
             _characterController.height = _characterControllerDefaultHeight / 2;
             _isShootDodging = true;
+            _shootDodgeDirection = this.transform.forward;
             _playerPlanarVelocity = _playerPlanarVelocity.normalized * _maxVelocity;
         }
         if (_isShootDodging)
@@ -201,7 +205,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (!_isShootDodging && !_isProne)
+        if (!_isShootDodging && !_isProne) //Make player stand up
         {
             _mesh.transform.localRotation = RotateAngle(_mesh.transform.localRotation, Quaternion.Euler(new Vector3(0, 0, 0)),_angleRotateSpeed * Time.deltaTime);
         }
@@ -415,7 +419,7 @@ public class PlayerController : MonoBehaviour
             RightGun.ammoInReserve = totalAmmo;
         }
     }
-
+    
     private void FixedUpdate()
     {
         Vector3 _movement = Vector3.zero;

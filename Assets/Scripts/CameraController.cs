@@ -126,14 +126,15 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate() //So that camera moves after player
     {
-        /*if (_playerController._isShootDodging || _playerController._isProne)
+        //Make sure the mesh doesn't rotate when shootdodging
+        if (_playerController._isShootDodging || _playerController._isProne) 
         {
             _cameraHolder.transform.Rotate(0, _deltaAngleX, 0);
-        }*/
-        //else
+        }
+        else
         {
             transform.root.Rotate(0, _cameraHolder.localRotation.eulerAngles.y, 0); //rotate player towards where the camera was looking when shoot dodging
-            _cameraHolder.localRotation = Quaternion.Euler(_cameraHolder.localRotation.eulerAngles.x, 0,0); //rotate camera back
+            _cameraHolder.localRotation = Quaternion.Euler(-_angleY, 0,0); //rotate camera back
             transform.root.Rotate(0, _deltaAngleX, 0); //Rotates player
         }
         _cameraHolder.transform.Rotate(-_deltaAngleY, 0, 0);

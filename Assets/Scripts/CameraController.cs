@@ -130,6 +130,7 @@ public class CameraController : MonoBehaviour
         if (_playerController._isShootDodging || _playerController._isProne) 
         {
             _cameraHolder.transform.Rotate(0, _deltaAngleX, 0);
+            _cameraHolder.rotation = Quaternion.Euler(-_angleY, _cameraHolder.rotation.eulerAngles.y, 0);
         }
         else
         {

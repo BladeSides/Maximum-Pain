@@ -14,6 +14,9 @@ public class CameraController : MonoBehaviour
     [SerializeField] private Quaternion _targetRotation;
     [SerializeField] private Transform _cameraHolder;
 
+    [SerializeField] private bool _startedRevolving = false;
+    public bool isPlayerDead = false;
+
     [SerializeField] private float _angleX;
     [SerializeField] private float _angleY;
     [SerializeField] private float _deltaAngleX = 0;
@@ -50,6 +53,11 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isPlayerDead)
+        {
+            ClipCamera();
+            return;
+        }
         _mouseInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
         _deltaAngleX = _mouseInput.x * Time.unscaledDeltaTime * _mouseSenstivity;
@@ -83,8 +91,7 @@ public class CameraController : MonoBehaviour
         ClipCamera();
         //Mathf.Clamp(_angleY, _yLimits.x, _yLimits.y);
         //_targetRotation = Quaternion.Euler(_angleY, _angleX, 0);
-}
-
+    }
 
     private void ClipCamera()
     {
@@ -127,6 +134,16 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate() //So that camera moves after player
     {
+        if (isPlayerDead)
+        {
+            RevolveAroundPlayer();
+            if (!_startedRevolving)
+            {
+                _angleX = 0;
+            }
+            _startedRevolving = true;
+            return;
+        }
         //Make sure the mesh doesn't rotate when shootdodging
         if (_playerMovement._isShootDodging || _playerMovement._isProne) 
         {
@@ -140,5 +157,13 @@ public class CameraController : MonoBehaviour
             transform.root.Rotate(0, _deltaAngleX, 0); //Rotates player
         }
         _cameraHolder.transform.Rotate(-_deltaAngleY, 0, 0);
+    }
+
+    private void RevolveAroundPlayer()
+    {
+        _angleY = 0;
+        _angleX += 25f * Time.deltaTime;
+        _cameraHolder.rotation = Quaternion.Euler(0, _angleX, 0);
+        _offsetDistance = _offsetDistance * 0.5f;
     }
 }

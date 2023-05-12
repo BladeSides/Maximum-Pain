@@ -1,14 +1,31 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-    [SerializeField] private float _health = 100f;
+    //Health and bullet time
+    public float health = 100f;
     [SerializeField] private float _maxHealth = 100f;
+    public float bulletTime = 100f;
+    [SerializeField] private float _maxBulletTime = 100f;
+
+    public float painkillerCount = 0f;
+    [SerializeField] private float _pkHealthRegenRate = 25f;
+    [SerializeField] private float _timerPerPk = 1.5f;
+    [SerializeField] private float _pkTimer = 0f;
+
+    public bool isAlive = true;
+
+    //Camera
+    [SerializeField] private CameraController _cameraController;
+
+    [SerializeField] private float _bulletTimeDegenRate = 10f;
+    [SerializeField] private float _bulletTimePerHit = 10f;
 
     //Slow Motion
-    [SerializeField] private bool _isSlowMotion = false;
+    [SerializeField] public bool isSlowMotion = false;
     [SerializeField] private float _defaultDeltaTime;
 
     //Blood Particles
@@ -17,19 +34,67 @@ public class PlayerManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _health = _maxHealth;
+        //Set Default Values
+        health = _maxHealth;
+        bulletTime = _maxBulletTime;
         _defaultDeltaTime = Time.deltaTime;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(1))
+        if (health <= 0f)
         {
-            _isSlowMotion = !_isSlowMotion;
+            KillPlayer();
+            Time.timeScale = 0.25f;
+            isAlive = false;
         }
-        if (_isSlowMotion)
+        if (!isAlive)
         {
+            return;
+        }
+        PainKillers();
+        BulletTime();
+    }
+
+    private void PainKillers()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (painkillerCount > 0 && health < _maxHealth)
+            {
+                painkillerCount -= 1;
+                _pkTimer += _timerPerPk;
+            }
+        }
+
+        if (_pkTimer > 0)
+        {
+            health += _pkHealthRegenRate * Time.deltaTime;
+        }
+
+        _pkTimer -= Time.deltaTime;
+
+        //LimitValues
+        health = Mathf.Clamp(health, 0, _maxHealth);
+        _pkTimer = Mathf.Max(_pkTimer, 0);
+    }
+    private void KillPlayer()
+    {
+        _cameraController.isPlayerDead = true;
+        Time.timeScale = 0.25f;
+        Time.fixedDeltaTime = _defaultDeltaTime * 0.25f;
+    }
+
+    private void BulletTime()
+    {
+        if (bulletTime <= 0)
+        {
+            isSlowMotion = false;
+        }
+        if (isSlowMotion)
+        {
+            bulletTime -= _bulletTimeDegenRate * Time.unscaledDeltaTime;
             Time.timeScale = 0.25f;
             Time.fixedDeltaTime = _defaultDeltaTime * 0.25f;
         }
@@ -38,9 +103,22 @@ public class PlayerManager : MonoBehaviour
             Time.timeScale = 1f;
             Time.fixedDeltaTime = _defaultDeltaTime;
         }
+        bulletTime = Mathf.Clamp(bulletTime, 0, _maxBulletTime);
     }
+
     public void Damage(float damageAmount)
     {
-        _health -= damageAmount;
+        health -= damageAmount;
+    }
+
+    public void AddBulletTime()
+    {
+        bulletTime += _bulletTimePerHit;
+        bulletTime = Mathf.Clamp(bulletTime, 0, _maxBulletTime);
+    }
+
+    public void AddPainKiller()
+    {
+        painkillerCount += 1;
     }
 }

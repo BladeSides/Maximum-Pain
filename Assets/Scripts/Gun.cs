@@ -55,10 +55,12 @@ public class Gun : MonoBehaviour
     {
         if (isHeld)
         {
+            _rigidBody.isKinematic = true;
             _rigidBody.useGravity = false;
         }
         else
         {
+            _rigidBody.isKinematic = false;
             _rigidBody.useGravity = true;
         }
     }
@@ -85,6 +87,14 @@ public class Gun : MonoBehaviour
                             {
                                 ec.Damage(damage);
                                 Instantiate(ec._bloodParticles, hit.point, Quaternion.identity);
+
+                                //Only add to bullet time if player is NOT shoot dodging
+                                PlayerManager pm = _player.GetComponent<PlayerManager>();
+                                PlayerMovement pmovement = _player.GetComponent<PlayerMovement>();
+                                if (pmovement._isShootDodging == false)
+                                {
+                                    pm.AddBulletTime();
+                                }
                             }
                         }
                         else if (hit.collider.isTrigger == false) //Prevents decals from spawning at the the trigger boxes for doors
@@ -113,7 +123,7 @@ public class Gun : MonoBehaviour
                     timer = 0;
                     //Make less likely to hit player when moving
                     if (Physics.Raycast(Origin, (_player.transform.position - Origin).normalized - UnityEngine.Random.insideUnitSphere * 
-                        (_player.GetComponent<PlayerMovement>().movement.magnitude/5 + 0.25f), out RaycastHit hit))
+                        (_player.GetComponent<PlayerMovement>().movement.magnitude/15 + 0.25f), out RaycastHit hit))
                     {
                         Debug.DrawLine(Origin, hit.point, Color.green, 0.5f);
                         if (hit.transform.root.tag == "Player")

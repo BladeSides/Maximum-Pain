@@ -11,6 +11,9 @@ public class PlayerMovement : MonoBehaviour
     //Character Controller
     private CharacterController _characterController;
 
+    //Player Manager
+    private PlayerManager _playerManager;
+
     //Velocities
     [SerializeField] private Vector3 _playerPlanarVelocity;
     [SerializeField] private Vector3 _playerVerticalVelocity;
@@ -44,6 +47,7 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
+        _playerManager = GetComponent<PlayerManager>();
     }
     // Start is called before the first frame update
     void Start()
@@ -62,36 +66,61 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        SetVerticalVelocity();
+
+        if (!_playerManager.isAlive)
+        {
+            MakePlayerFall();
+            return;
+        }
+
         SetInput();
 
         SetPlanarVelocity(); //As in, not jumping on the Y-Axis
 
-        SetVerticalVelocity();
-
         ShootDodge();
+    }
+
+    private void MakePlayerFall()
+    {
+        _characterController.height = _characterControllerDefaultHeight / 2;
+        Quaternion targetAngle = Quaternion.Euler(Vector3.back * 90);
+        _mesh.transform.localRotation = RotateAngle(_mesh.transform.localRotation, targetAngle, _angleRotateSpeed * Time.deltaTime);
     }
 
     private void SetInput()
     {
+        if (Input.GetMouseButtonDown(1))
+        {
+            _playerManager.isSlowMotion = !_playerManager.isSlowMotion;
+
+            if (_playerPlanarVelocity.magnitude >= 0.5f && !_isShootDodging && !_isProne
+                && CanJump() && _Input.magnitude > 0.5f) //0.5f an offset
+            {
+                StartShootDodge();
+            }
+        }
         _Input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+    }
+
+    private void StartShootDodge()
+    {
+        _playerManager.isSlowMotion = true;
+        _playerPlanarVelocity = new Vector3(_Input.x, 0, _Input.y);
+        _playerVerticalVelocity = new Vector3(0, _jumpVelocity, 0);
+        _characterController.Move(_jumpVelocity * Vector3.up * Time.deltaTime);
+        Time.timeScale = 0.1f;
+        _characterController.height = _characterControllerDefaultHeight / 2;
+        _isShootDodging = true;
+        _shootDodgeDirection = this.transform.forward;
+        _playerPlanarVelocity = _playerPlanarVelocity.normalized * _maxVelocity;
     }
 
     private void ShootDodge()
     {
-        if (Input.GetKeyDown(KeyCode.C) && CanJump())
-        {
-            _playerPlanarVelocity = new Vector3(_Input.x, 0, _Input.y);
-            _playerVerticalVelocity = new Vector3(0, _jumpVelocity, 0);
-            _characterController.Move(_jumpVelocity * Vector3.up * Time.deltaTime);
-            Time.timeScale = 0.1f;
-            _characterController.height = _characterControllerDefaultHeight / 2;
-            _isShootDodging = true;
-            _shootDodgeDirection = this.transform.forward;
-            _playerPlanarVelocity = _playerPlanarVelocity.normalized * _maxVelocity;
-        }
         if (_isShootDodging)
         {
-            if (_playerPlanarVelocity.sqrMagnitude >= 0.25) //Ofset
+            if (_playerPlanarVelocity.sqrMagnitude >= 0.5f) //Ofset
             {
                 Quaternion targetAngle = Quaternion.Euler(
                     new Vector3(_playerPlanarVelocity.z, 0, -_playerPlanarVelocity.x).normalized * 90);

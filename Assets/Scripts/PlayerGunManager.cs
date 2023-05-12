@@ -11,6 +11,8 @@ public class PlayerGunManager : MonoBehaviour
     [SerializeField] public Gun RightGun;
     [SerializeField] public Gun LeftGun;
 
+    [SerializeField] private PlayerManager _playerManager;
+
     [SerializeField] private List<Gun> _guns;
     [SerializeField] private Camera _mainCamera;
 
@@ -22,7 +24,10 @@ public class PlayerGunManager : MonoBehaviour
 
     [SerializeField] private Gun.TypeOfGun[] _gunOrder = { Gun.TypeOfGun.Pistol, Gun.TypeOfGun.SMG, Gun.TypeOfGun.Shotgun };
 
-
+    private void Awake()
+    {
+        _playerManager = GetComponent<PlayerManager>();
+    }
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -41,6 +46,10 @@ public class PlayerGunManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!_playerManager.isAlive)
+        {
+            return;
+        }
         if (Input.GetKeyDown(KeyCode.E))
         {
             int _nextGunIndex = 0;

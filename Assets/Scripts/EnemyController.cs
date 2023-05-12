@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(Rigidbody))]
 public class EnemyController : MonoBehaviour
 {
-
+    //Navmesh
     [SerializeField] private NavMeshAgent _navMeshAgent;
     [SerializeField] private float _timer = 0f;
     [SerializeField] private float _timePerAIUpdate = 0.1f;
@@ -45,6 +45,10 @@ public class EnemyController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (_playerTransform == null)
+        {
+            return;
+        }
         _timer += Time.deltaTime;
 
         if (_state == State.Unaware)

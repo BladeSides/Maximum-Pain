@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -17,6 +18,10 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private float _pkTimer = 0f;
 
     public bool isAlive = true;
+
+    //Game Over Stuff
+    [SerializeField] private float _deathTimer;
+    [SerializeField] private float _timeToEnd = 3f;
 
     //Camera
     [SerializeField] private CameraController _cameraController;
@@ -43,7 +48,7 @@ public class PlayerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (health <= 0f)
+        if (health <= 0f && isAlive)
         {
             KillPlayer();
             Time.timeScale = 0.25f;
@@ -51,10 +56,26 @@ public class PlayerManager : MonoBehaviour
         }
         if (!isAlive)
         {
+            EndGame();
             return;
         }
         PainKillers();
         BulletTime();
+    }
+
+    private void LateUpdate() //Make sure health is clamped after all updates have executed, so player doesn't
+        // have negative health
+    {
+        health = Mathf.Clamp(health, 0, _maxHealth);
+    }
+
+    private void EndGame()
+    {
+        _deathTimer += Time.unscaledDeltaTime;
+        if (_deathTimer > _timeToEnd)
+        {
+            SceneManager.LoadScene("GameOver");
+        }
     }
 
     private void PainKillers()
@@ -84,6 +105,8 @@ public class PlayerManager : MonoBehaviour
         _cameraController.isPlayerDead = true;
         Time.timeScale = 0.25f;
         Time.fixedDeltaTime = _defaultDeltaTime * 0.25f;
+        GameManager.gameWon = false;
+        _deathTimer = 0;
     }
 
     private void BulletTime()

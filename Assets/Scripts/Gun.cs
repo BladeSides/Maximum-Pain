@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(AudioSource))]
 public class Gun : MonoBehaviour
 {
     public GameObject Owner;
@@ -29,10 +30,14 @@ public class Gun : MonoBehaviour
     public ParticleSystem _muzzleFlash;
     public GameObject _bulletDecal;
     public LineRenderer _bulletTrail;
+    public AudioSource _audioSource;
+    public AudioClip _reloadSound;
+    public AudioClip _shootSound;
 
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody>();
+        _audioSource = GetComponent<AudioSource>();
     }
     private void OnEnable()
     {
@@ -47,6 +52,7 @@ public class Gun : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        _audioSource.pitch = Time.timeScale;
         timer+=Time.deltaTime;
         ReloadGun();
     }
@@ -77,6 +83,7 @@ public class Gun : MonoBehaviour
             {
                 if (timer > fireRate)
                 {
+                    PlayShootSound();
                     timer = 0;
                     if (Physics.Raycast(Camera.main.transform.position, Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 100f)) - Origin, out RaycastHit hit, Camera.main.farClipPlane))
                     {
@@ -120,6 +127,7 @@ public class Gun : MonoBehaviour
             {
                 if (timer > fireRate)
                 {
+                    PlayShootSound();
                     timer = 0;
                     //Make less likely to hit player when moving
                     if (Physics.Raycast(Origin, (_player.transform.position - Origin).normalized - UnityEngine.Random.insideUnitSphere * 
@@ -166,6 +174,15 @@ public class Gun : MonoBehaviour
         }
     }
 
+    private void PlayShootSound()
+    {
+        if (_audioSource.clip != _shootSound)
+        {
+            _audioSource.clip = _shootSound;
+        }
+        _audioSource.Play();
+    }
+
     public void ReloadGun()
     {
         if (!isReloading)
@@ -174,6 +191,12 @@ public class Gun : MonoBehaviour
         if (ammoInGun >= clipSize || ammoInReserve == 0)
         {
             return;
+        }
+
+        if (_audioSource.clip != _reloadSound)
+        {
+            _audioSource.clip = _reloadSound;
+            _audioSource.Play();
         }
         if (timer > reloadTime)
         {

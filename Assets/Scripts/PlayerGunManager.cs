@@ -181,6 +181,11 @@ public class PlayerGunManager : MonoBehaviour
 
             RightGun = rightGun;
             LeftGun = leftGun;
+            if (leftGun != null)
+            {
+                leftGun.timer = 0;
+            }
+            rightGun.timer = 0;
         }
         if (gunAmount >= 2)
         {
@@ -260,6 +265,7 @@ public class PlayerGunManager : MonoBehaviour
 
     public void AddGun(Gun gunToAdd)
     {
+        gunToAdd.timer = 0;
         int maxGunCount = gunToAdd.dualWieldable ? 1 : 2;
         int gunCount = 0;
         Gun gunToAddAmmoTo = null;

@@ -10,6 +10,8 @@ public class MainMenuManager : MonoBehaviour
     void Start()
     {
         Cursor.lockState = CursorLockMode.None;
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f;
     }
 
     // Update is called once per frame

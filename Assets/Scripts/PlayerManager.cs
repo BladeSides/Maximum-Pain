@@ -42,7 +42,7 @@ public class PlayerManager : MonoBehaviour
         //Set Default Values
         health = _maxHealth;
         bulletTime = _maxBulletTime;
-        _defaultDeltaTime = Time.deltaTime;
+        _defaultDeltaTime = 0.02f;
     }
 
     // Update is called once per frame

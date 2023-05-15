@@ -282,6 +282,7 @@ public class PlayerGunManager : MonoBehaviour
             if (rightGun == null)
             {
                 print("Fail");
+                //Sometimes, right gun is set to null. I have no idea how it is possible and should eventually look into it.
             }
             LeftGun = leftGun;
             if (leftGun != null)

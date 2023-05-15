@@ -10,7 +10,6 @@ public class CameraController : MonoBehaviour
     private float _offsetDistance;
     [SerializeField] private Transform _target;
     [SerializeField] private float _mouseSenstivity = 100f;
-    [SerializeField] private float _slerpFactor = 0.01f;
     [SerializeField] private Quaternion _targetRotation;
     [SerializeField] private Transform _cameraHolder;
 
@@ -22,7 +21,6 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float _deltaAngleX = 0;
     [SerializeField] private float _deltaAngleY = 0;
 
-    [SerializeField] private float _maximumClipping = 10f;
     [SerializeField] private float _clipOffset = 1f;
     [SerializeField] private Vector3 _cameraCentreViewPort = new Vector3(0.5f, 0.5f, 0.05f);
 

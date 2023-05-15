@@ -279,6 +279,10 @@ public class PlayerGunManager : MonoBehaviour
                 RightGun = rightGun;
             }
             print(rightGun);
+            if (rightGun == null)
+            {
+                print("Fail");
+            }
             LeftGun = leftGun;
             if (leftGun != null)
             {

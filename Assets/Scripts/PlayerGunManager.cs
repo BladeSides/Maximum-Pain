@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -49,59 +50,6 @@ public class PlayerGunManager : MonoBehaviour
         if (!_playerManager.isAlive)
         {
             return;
-        }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            int _nextGunIndex = 0;
-            bool changedGun = false;
-            foreach (Gun.TypeOfGun gunType in _gunOrder)
-            {
-                if (gunType == _currentGunType)
-                {
-                    _nextGunIndex = (int)gunType + 1;
-                    if (_nextGunIndex > _gunOrder.Length - 1)
-                    {
-                        _nextGunIndex = 0;
-                    }
-                    while (_nextGunIndex != (int)_currentGunType)
-                    {
-                        foreach (Gun gun in _guns)
-                        {
-                            if (_nextGunIndex == (int)gun._typeOfGun)
-                            {
-                                _nextGunIndex = (int)gun._typeOfGun;
-                                changedGun = true;
-                            }
-                        }
-                        if (changedGun == false)
-                        {
-                            _nextGunIndex++;
-                            if (_nextGunIndex > _gunOrder.Length - 1)
-                            {
-                                _nextGunIndex = 0;
-                            }
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-            foreach (Gun gun in _guns)
-            {
-                print("Testing guns");
-                if ((int)gun._typeOfGun == _nextGunIndex)
-                {
-                    print(_nextGunIndex);
-                    RightGun = gun;
-                    IsDualWielding = false;
-                    LeftGun = null;
-                    _currentGunType = gun._typeOfGun;
-                    changedGun = true;
-                    print("Changed Gun");
-                }
-            }
         }
         SetInput();
 
@@ -153,17 +101,164 @@ public class PlayerGunManager : MonoBehaviour
         {
             DualWield();
         }
+
+        if (Input.GetAxis("Mouse ScrollWheel") != 0)
+        {
+            if (Input.GetAxis("Mouse ScrollWheel") > 0)
+            {
+                GetNextWeapon();
+            }
+            if (Input.GetAxis("Mouse ScrollWheel") < 0)
+            {
+                GetPreviousWeapon();
+            }
+        }
+
     }
 
-    private void DualWield()
+    private void GetPreviousWeapon()
     {
-        int gunAmount = 0;
-        Gun.TypeOfGun _guntype = _currentGunType;
-        bool setRightGun = false;
-        Gun leftGun = null, rightGun = null;
+        if (IsDualWielding & LeftGun != null)
+        {
+            LeftGun = null;
+            IsDualWielding = false;
+            return;
+        }
+
+        int _nextGunIndex = 0;
+        bool changedGun = false;
+        foreach (Gun.TypeOfGun gunType in _gunOrder)
+        {
+            if (gunType == _currentGunType)
+            {
+                _nextGunIndex = (int)gunType - 1;
+                if (_nextGunIndex < 0)
+                {
+                    _nextGunIndex = _gunOrder.Length - 1;
+                }
+                while (_nextGunIndex != (int)_currentGunType)
+                {
+                    foreach (Gun gun in _guns)
+                    {
+                        if (_nextGunIndex == (int)gun._typeOfGun)
+                        {
+                            _nextGunIndex = (int)gun._typeOfGun;
+                            changedGun = true;
+                        }
+                    }
+                    if (changedGun == false)
+                    {
+                        _nextGunIndex--;
+                        if (_nextGunIndex < 0)
+                        {
+                            _nextGunIndex = _gunOrder.Length - 1;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+        }
         foreach (Gun gun in _guns)
         {
-            if (gun._typeOfGun == _guntype)
+            print("Testing guns");
+            if ((int)gun._typeOfGun == _nextGunIndex)
+            {
+                print(_nextGunIndex);
+                RightGun = gun;
+                IsDualWielding = false;
+                LeftGun = null;
+                _currentGunType = gun._typeOfGun;
+                changedGun = true;
+                print("Changed Gun");
+            }
+        }
+    }
+
+    private void GetNextWeapon()
+    {
+        bool dualwieldSuccesful = false;
+        if (!IsDualWielding & LeftGun == null && RightGun.dualWieldable)
+        {
+            dualwieldSuccesful = DualWield();
+            if (dualwieldSuccesful)
+            {
+                return;
+            }
+        }
+
+        if (dualwieldSuccesful == false)
+        {
+            int _nextGunIndex = 0;
+            bool changedGun = false;
+            foreach (Gun.TypeOfGun gunType in _gunOrder)
+            {
+                if (gunType == _currentGunType)
+                {
+                    _nextGunIndex = (int)gunType + 1;
+                    if (_nextGunIndex > _gunOrder.Length - 1)
+                    {
+                        _nextGunIndex = 0;
+                    }
+                    while (_nextGunIndex != (int)_currentGunType)
+                    {
+                        foreach (Gun gun in _guns)
+                        {
+                            if (_nextGunIndex == (int)gun._typeOfGun)
+                            {
+                                _nextGunIndex = (int)gun._typeOfGun;
+                                changedGun = true;
+                            }
+                        }
+                        if (changedGun == false)
+                        {
+                            _nextGunIndex++;
+                            if (_nextGunIndex > _gunOrder.Length - 1)
+                            {
+                                _nextGunIndex = 0;
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            foreach (Gun gun in _guns)
+            {
+                print("Testing guns");
+                if ((int)gun._typeOfGun == _nextGunIndex)
+                {
+                    print(_nextGunIndex);
+                    RightGun = gun;
+                    IsDualWielding = false;
+                    LeftGun = null;
+                    _currentGunType = gun._typeOfGun;
+                    changedGun = true;
+                    print("Changed Gun");
+                }
+            }
+        }
+    }
+
+    private bool DualWield() //Tries to dual wield, returns true if succesful
+    {
+        if (RightGun.dualWieldable == false)
+        {
+            return false;
+        }
+        int gunAmount = 0;
+
+        bool setRightGun = false;
+        Gun leftGun = null, rightGun = null;
+
+        foreach (Gun gun in _guns)
+        {
+            if (gun._typeOfGun == _currentGunType)
             {
                 if (rightGun == null && setRightGun == false)
                 {
@@ -179,17 +274,26 @@ public class PlayerGunManager : MonoBehaviour
                 gunAmount++;
             }
 
-            RightGun = rightGun;
+            if (rightGun != null)
+            {
+                RightGun = rightGun;
+            }
+            print(rightGun);
             LeftGun = leftGun;
             if (leftGun != null)
             {
                 leftGun.timer = 0;
             }
-            rightGun.timer = 0;
+
         }
         if (gunAmount >= 2)
         {
             IsDualWielding = true;
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 

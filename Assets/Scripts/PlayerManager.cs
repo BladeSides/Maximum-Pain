@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,6 +12,8 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private float _maxHealth = 100f;
     public float bulletTime = 100f;
     [SerializeField] private float _maxBulletTime = 100f;
+
+    [SerializeField] private GameObject _yellowFilter;
 
     public float painkillerCount = 0f;
     [SerializeField] private float _pkHealthRegenRate = 25f;
@@ -120,11 +123,13 @@ public class PlayerManager : MonoBehaviour
             bulletTime -= _bulletTimeDegenRate * Time.unscaledDeltaTime;
             Time.timeScale = 0.25f;
             Time.fixedDeltaTime = _defaultDeltaTime * 0.25f;
+            _yellowFilter.SetActive(true);
         }
         else
         {
             Time.timeScale = 1f;
             Time.fixedDeltaTime = _defaultDeltaTime;
+            _yellowFilter.SetActive(false);
         }
         bulletTime = Mathf.Clamp(bulletTime, 0, _maxBulletTime);
     }

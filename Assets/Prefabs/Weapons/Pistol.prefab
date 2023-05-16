@@ -153,7 +153,7 @@ MonoBehaviour:
   isHeld: 1
   isReloading: 0
   clipSize: 20
-  ammoInReserve: 60
+  ammoInReserve: 120
   ammoInGun: 20
   fireRate: 0.25
   reloadTime: 1

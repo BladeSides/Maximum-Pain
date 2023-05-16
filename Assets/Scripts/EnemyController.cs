@@ -70,7 +70,7 @@ public class EnemyController : MonoBehaviour
             _gun.Shoot(_gun.transform.position, "Enemy");
             this.transform.LookAt(new Vector3(_playerTransform.position.x, this.transform.position.y, _playerTransform.position.z));
         }
-
+        _gun.transform.position = _hostler.transform.position;
         if (_health <= 0)
         {
             _gun.transform.parent = null;

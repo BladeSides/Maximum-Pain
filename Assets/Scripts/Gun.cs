@@ -14,25 +14,35 @@ public class Gun : MonoBehaviour
         Shotgun
     }
 
+    //Gun Properties
     public TypeOfGun _typeOfGun;
     public bool dualWieldable = false;
     public bool isHeld = false;
+
+    //Ammo Stuff
     public bool isReloading = false;
     public int clipSize;
     public int ammoInReserve;
     public int ammoInGun;
-    public float fireRate;
-    public float reloadTime;
+
+    //Gun stats
+    [SerializeField] private float fireRate;
+    [SerializeField] private float reloadTime;
+    [SerializeField] private float damage;
+
     public float timer;
-    public float damage;
-    public GameObject _player;
+
+    [SerializeField] private GameObject _player;
+
     private Rigidbody _rigidBody;
-    public ParticleSystem _muzzleFlash;
-    public GameObject _bulletDecal;
-    public LineRenderer _bulletTrail;
-    public AudioSource _audioSource;
-    public AudioClip _reloadSound;
-    public AudioClip _shootSound;
+
+    //Gun aesthetics
+    [SerializeField] private ParticleSystem _muzzleFlash;
+    [SerializeField] private GameObject _bulletDecal;
+    [SerializeField] private LineRenderer _bulletTrail;
+    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private AudioClip _reloadSound;
+    [SerializeField] private AudioClip _shootSound;
 
     private void Awake()
     {
@@ -93,7 +103,7 @@ public class Gun : MonoBehaviour
                             if (hit.transform.gameObject.TryGetComponent<EnemyController>(out EnemyController ec))
                             {
                                 ec.Damage(damage);
-                                Instantiate(ec._bloodParticles, hit.point, Quaternion.identity);
+                                Instantiate(ec.bloodParticles, hit.point, Quaternion.identity);
 
                                 //Only add to bullet time if player is NOT shoot dodging
                                 PlayerManager pm = _player.GetComponent<PlayerManager>();

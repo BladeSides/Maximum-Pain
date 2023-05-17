@@ -107,8 +107,8 @@ MonoBehaviour:
   _health: 100
   _hostler: {fileID: 1861716905493265104}
   _gun: {fileID: 7719892653602528449}
-  _bloodParticles: {fileID: 128624206981211083, guid: 5bba249c0808bf948b6bee3e42bd5a23, type: 3}
-  _rigidBody: {fileID: 0}
+  bloodParticles: {fileID: 128624206981211083, guid: 5bba249c0808bf948b6bee3e42bd5a23, type: 3}
+  rigidBody: {fileID: 0}
   _state: 0
 --- !u!195 &1861716905719836346
 NavMeshAgent:
@@ -281,6 +281,10 @@ PrefabInstance:
     - target: {fileID: 6260467907305240384, guid: ab062c795ad00884597b4bbc15ef8d7d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6260467907305240385, guid: ab062c795ad00884597b4bbc15ef8d7d, type: 3}
+      propertyPath: isHeld
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6260467907305240387, guid: ab062c795ad00884597b4bbc15ef8d7d, type: 3}
       propertyPath: m_Name

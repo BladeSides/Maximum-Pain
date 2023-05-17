@@ -22,7 +22,8 @@ public class BulletTrail : MonoBehaviour
     void Update()
     {
         Color newColor = Color.Lerp(_lineRenderer.startColor, new Color(255, 255, 255, 0), _timer / _lifetime);
-        _lineRenderer.SetColors(newColor, newColor);
+        _lineRenderer.startColor = newColor;
+        _lineRenderer.endColor = newColor;
         _timer += Time.deltaTime;
 
         if (_timer > _lifetime) 

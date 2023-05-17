@@ -100,7 +100,6 @@ MonoBehaviour:
   _timePerAIUpdate: 0.1
   _timePerUnawareUpdate: 0.1
   _timePerFollowUpdate: 1
-  _minimumDistance: 7
   _wanderRadius: 5
   _playerTransform: {fileID: 0}
   _viewDistance: 30
@@ -108,8 +107,8 @@ MonoBehaviour:
   _health: 100
   _hostler: {fileID: 2600004950623831391}
   _gun: {fileID: 5626127994578834118}
-  _bloodParticles: {fileID: 128624206981211083, guid: 5bba249c0808bf948b6bee3e42bd5a23, type: 3}
-  _rigidBody: {fileID: 0}
+  bloodParticles: {fileID: 128624206981211083, guid: 5bba249c0808bf948b6bee3e42bd5a23, type: 3}
+  rigidBody: {fileID: 0}
   _state: 0
 --- !u!195 &2600004950850670901
 NavMeshAgent:

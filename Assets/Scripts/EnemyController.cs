@@ -20,8 +20,8 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float _health = 100f;
     [SerializeField] private Transform _hostler;
     [SerializeField] private Gun _gun;
-    [SerializeField] public ParticleSystem _bloodParticles;
-    [SerializeField] public Rigidbody _rigidBody;    
+    public ParticleSystem bloodParticles;
+    public Rigidbody rigidBody;    
 
     private enum State 
     { 
@@ -34,14 +34,19 @@ public class EnemyController : MonoBehaviour
     private void Awake()
     {
         _navMeshAgent = GetComponent<NavMeshAgent>();
-        _rigidBody = GetComponent<Rigidbody>();
+        rigidBody = GetComponent<Rigidbody>();
     }
     void Start()
     {
         _playerTransform = GameObject.FindWithTag("Player").transform;
-        _rigidBody.isKinematic = true;
+        rigidBody.isKinematic = true;
+        _gun.isHeld = true;
     }
 
+   /* private void Update()
+    {
+        //gun.transform.position = _hostler.transform.position;
+    }*/
     private void FixedUpdate()
     {
         if (_playerTransform == null)
@@ -70,14 +75,13 @@ public class EnemyController : MonoBehaviour
             _gun.Shoot(_gun.transform.position, "Enemy");
             this.transform.LookAt(new Vector3(_playerTransform.position.x, this.transform.position.y, _playerTransform.position.z));
         }
-        _gun.transform.position = _hostler.transform.position;
         if (_health <= 0)
         {
             _gun.transform.parent = null;
             _gun.isHeld = false;
             _gun.Owner = null;
-            _rigidBody.isKinematic = false;
-            _rigidBody.AddForce(this.transform.forward * -1, ForceMode.Impulse);
+            rigidBody.isKinematic = false;
+            rigidBody.AddForce(this.transform.forward * -1, ForceMode.Impulse);
 
             Destroy(this);
             Destroy(_navMeshAgent);
@@ -92,7 +96,7 @@ public class EnemyController : MonoBehaviour
             {
                 _navMeshAgent.isStopped = false;
                 if ((Physics.Raycast(this.transform.position, (_playerTransform.position - this.transform.position).normalized,
-                    out RaycastHit hit, _viewDistance) && hit.transform.tag == "Player"))
+                    out RaycastHit hit, _viewDistance) && hit.transform.CompareTag("Player")))
                 {
                     _state = State.Following;
                     Vector2 randomWanderCircle = Random.insideUnitCircle * _wanderRadius;
@@ -113,7 +117,7 @@ public class EnemyController : MonoBehaviour
             {
                 _navMeshAgent.isStopped = false;
                 if ((Physics.Raycast(this.transform.position, (_playerTransform.position - this.transform.position).normalized,
-                    out RaycastHit hit, _viewDistance) && hit.transform.tag == "Player"))
+                    out RaycastHit hit, _viewDistance) && hit.transform.CompareTag("Player")))
                 {
                     _state = State.Following;
                     Vector2 randomWanderCircle = Random.insideUnitCircle * _wanderRadius;

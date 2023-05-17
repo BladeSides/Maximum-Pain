@@ -175,6 +175,8 @@ public class PlayerGunManager : MonoBehaviour
                 print("Changed Gun");
             }
         }
+
+        DualWield();
     }
 
     private void GetNextWeapon()

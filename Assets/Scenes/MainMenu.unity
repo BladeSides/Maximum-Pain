@@ -1272,7 +1272,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1239182245
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1315,12 +1315,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'WASD/Arrow Keys - Movement
 
-    SpaceBar - Jump
+    SpaceBar - Jump, R - Reload
 
-    Right Click - Slow
-    Down Time/Shoot Dodge (While moving)
+    Right
+    Click - Slow Down Time/Shoot Dodge (While moving)
 
-    Tab - Consume PainKillers'
+    Tab - Consume PainKillers
+
+    Scroll
+    - Change weapons'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7e207ddb363dee04184d6e599d09768e, type: 2}
   m_sharedMaterial: {fileID: 3467941968486414132, guid: 7e207ddb363dee04184d6e599d09768e, type: 2}

@@ -190,8 +190,8 @@ MonoBehaviour:
   _health: 100
   _hostler: {fileID: 5232974850259257030}
   _gun: {fileID: 8179175137500352851}
-  _bloodParticles: {fileID: 128624206981211083, guid: 5bba249c0808bf948b6bee3e42bd5a23, type: 3}
-  _rigidBody: {fileID: 0}
+  bloodParticles: {fileID: 128624206981211083, guid: 5bba249c0808bf948b6bee3e42bd5a23, type: 3}
+  rigidBody: {fileID: 0}
   _state: 0
 --- !u!195 &5232974851268907206
 NavMeshAgent:
@@ -241,6 +241,10 @@ PrefabInstance:
     - target: {fileID: 4115452872255068744, guid: 0088198f6306ae54b89a6dc40d4f1a65, type: 3}
       propertyPath: m_Name
       value: Shotgun
+      objectReference: {fileID: 0}
+    - target: {fileID: 4115452872255068746, guid: 0088198f6306ae54b89a6dc40d4f1a65, type: 3}
+      propertyPath: isHeld
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4115452872255068747, guid: 0088198f6306ae54b89a6dc40d4f1a65, type: 3}
       propertyPath: m_RootOrder

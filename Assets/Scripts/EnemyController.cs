@@ -43,7 +43,7 @@ public class EnemyController : MonoBehaviour
         _gun.isHeld = true;
     }
 
-   /* private void Update()
+    /*private void Update()
     {
         //gun.transform.position = _hostler.transform.position;
     }*/

@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4115452871567320753}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.3}
   m_LocalScale: {x: 0.058866907, y: 0.18683, z: 0.08391096}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -159,8 +159,8 @@ MonoBehaviour:
   ammoInGun: 5
   fireRate: 0.5
   reloadTime: 1
-  timer: 0
   damage: 50
+  timer: 0
   _player: {fileID: 0}
   _muzzleFlash: {fileID: 4967501937868726378}
   _bulletDecal: {fileID: 3751758273044406993, guid: 4fe0c01cd4069f54faf0c87895a2a490, type: 3}
@@ -320,7 +320,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4115452872376128825}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.0632, z: 0.246}
+  m_LocalPosition: {x: 0, y: 0.0632, z: -0.054000184}
   m_LocalScale: {x: 0.077217944, y: 0.71939576, z: 0.08391096}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -417,7 +417,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8069501589360605361}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.023, z: 0.257}
+  m_LocalPosition: {x: 0, y: 0.023, z: -0.04300019}
   m_LocalScale: {x: 0.10810447, y: 0.3541873, z: 0.08391096}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -514,7 +514,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8069501591122007418}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.023, z: -0.173}
+  m_LocalPosition: {x: 0, y: 0.023, z: -0.47300017}
   m_LocalScale: {x: 0.10810447, y: 0.3541873, z: 0.08391096}
   m_ConstrainProportionsScale: 0
   m_Children: []

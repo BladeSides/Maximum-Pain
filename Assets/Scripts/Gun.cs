@@ -114,7 +114,7 @@ public class Gun : MonoBehaviour
                                 }
                             }
                         }
-                        else if (hit.collider.isTrigger == false) //Prevents decals from spawning at the the trigger boxes for doors
+                        else if (hit.collider.isTrigger == false && !(hit.collider.CompareTag("Player") || hit.collider.CompareTag("Enemy"))) //Prevents decals from spawning at the the trigger boxes for doors
                         {
                             Vector3 direction = (hit.point - Origin).normalized;
                             Instantiate(_bulletDecal, hit.point, Quaternion.FromToRotation(Vector3.forward, hit.normal));
@@ -152,7 +152,7 @@ public class Gun : MonoBehaviour
                                 Instantiate(pm.bloodParticleSystem, hit.point, Quaternion.identity);
                             }
                         }
-                        else if (hit.collider.isTrigger == false && hit.transform.root.tag != "Enemy")
+                        else if (hit.collider.isTrigger == false && !(hit.collider.CompareTag("Player") || hit.collider.CompareTag("Enemy")))
                         {
                             Vector3 direction = (hit.point - Origin).normalized;
                             Instantiate(_bulletDecal, hit.point, Quaternion.FromToRotation(Vector3.forward, hit.normal));

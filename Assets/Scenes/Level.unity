@@ -8020,6 +8020,10 @@ PrefabInstance:
       propertyPath: _yellowFilter
       value: 
       objectReference: {fileID: 1909665428}
+    - target: {fileID: 1398673391705847991, guid: 12a2f9f3ba4e95048aa59aaee0f5eeff, type: 3}
+      propertyPath: m_TagString
+      value: MainCamera
+      objectReference: {fileID: 0}
     - target: {fileID: 1398673392598362240, guid: 12a2f9f3ba4e95048aa59aaee0f5eeff, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -8067,6 +8071,10 @@ PrefabInstance:
     - target: {fileID: 1398673392598362255, guid: 12a2f9f3ba4e95048aa59aaee0f5eeff, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 1398673392992021094, guid: 12a2f9f3ba4e95048aa59aaee0f5eeff, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 6735823417665067488, guid: 12a2f9f3ba4e95048aa59aaee0f5eeff, type: 3}
       propertyPath: _moveAcceleration

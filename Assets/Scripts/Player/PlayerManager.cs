@@ -42,6 +42,8 @@ public class PlayerManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+
         //Set Default Values
         health = _maxHealth;
         bulletTime = _maxBulletTime;

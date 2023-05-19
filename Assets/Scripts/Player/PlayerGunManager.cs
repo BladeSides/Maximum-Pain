@@ -33,7 +33,6 @@ public class PlayerGunManager : MonoBehaviour
     }
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
         if (_mainCamera == null)
         {
             _mainCamera = Camera.main;

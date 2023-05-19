@@ -65,6 +65,10 @@ public class Gun : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (_player == null)
+        {
+            _player = GameObject.FindGameObjectWithTag("Player");
+        }
         _audioSource.pitch = Time.timeScale;
         timer+=Time.deltaTime;
         ReloadGun();

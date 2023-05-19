@@ -12,6 +12,8 @@ public class PlayerGunManager : MonoBehaviour
     [SerializeField] public Gun RightGun;
     [SerializeField] public Gun LeftGun;
 
+    [SerializeField] Vector3 _gunLookAtPosition;
+
     [SerializeField] private PlayerManager _playerManager;
 
     [SerializeField] private List<Gun> _guns;
@@ -81,15 +83,17 @@ public class PlayerGunManager : MonoBehaviour
     private void SetGuns()
     {
         DistributeAmmo();
+        SetGunLookAtPosition();
         RightGun.transform.localPosition = Vector3.zero;
         RightGun.transform.SetParent(_rightHostler);
-        RightGun.transform.LookAt(this.transform.position + _mainCamera.transform.forward * 5 + _mainCamera.transform.right);
+        RightGun.transform.LookAt(this.transform.position + _gunLookAtPosition);
         RightGun.gameObject.SetActive(true);
+
         if (IsDualWielding)
         {
             LeftGun.transform.SetParent(_leftHostler);
             LeftGun.transform.localPosition = Vector3.zero;
-            LeftGun.transform.LookAt(this.transform.position + _mainCamera.transform.forward * 5 + _mainCamera.transform.right);
+            LeftGun.transform.LookAt(this.transform.position + _gunLookAtPosition);
             LeftGun.gameObject.SetActive(true);
         }
 
@@ -116,7 +120,12 @@ public class PlayerGunManager : MonoBehaviour
 
     }
 
-    private void GetPreviousWeapon()
+    private void SetGunLookAtPosition()
+    {
+        _gunLookAtPosition = _mainCamera.transform.forward * 5 + _mainCamera.transform.right;
+    }
+
+        private void GetPreviousWeapon()
     {
         if (IsDualWielding & LeftGun != null)
         {

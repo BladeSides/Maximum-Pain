@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4115452871567320752}
   m_Layer: 0
   m_Name: Cube
-  m_TagString: Untagged
+  m_TagString: Gun
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -112,7 +112,7 @@ GameObject:
   - component: {fileID: 4015455614663307306}
   m_Layer: 0
   m_Name: Shotgun
-  m_TagString: Untagged
+  m_TagString: Gun
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -153,6 +153,8 @@ MonoBehaviour:
   _typeOfGun: 2
   dualWieldable: 0
   isHeld: 0
+  _inaccuracy: 0.25
+  _movementInaccuracy: 0.06
   isReloading: 0
   clipSize: 5
   ammoInReserve: 20
@@ -307,7 +309,7 @@ GameObject:
   - component: {fileID: 4115452872376128827}
   m_Layer: 0
   m_Name: Cube (1)
-  m_TagString: Untagged
+  m_TagString: Gun
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -404,7 +406,7 @@ GameObject:
   - component: {fileID: 8069501589360605363}
   m_Layer: 0
   m_Name: Cube (3)
-  m_TagString: Untagged
+  m_TagString: Gun
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -501,7 +503,7 @@ GameObject:
   - component: {fileID: 8069501591122007412}
   m_Layer: 0
   m_Name: Cube (2)
-  m_TagString: Untagged
+  m_TagString: Gun
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -642,6 +644,10 @@ PrefabInstance:
     - target: {fileID: 4800065986395182028, guid: d9b3db59548e2a54fa67f0a40729ba03, type: 3}
       propertyPath: m_Name
       value: MuzzleFlash
+      objectReference: {fileID: 0}
+    - target: {fileID: 4800065986395182028, guid: d9b3db59548e2a54fa67f0a40729ba03, type: 3}
+      propertyPath: m_TagString
+      value: Gun
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d9b3db59548e2a54fa67f0a40729ba03, type: 3}

@@ -46,7 +46,7 @@ public class GunText : MonoBehaviour
         if (_playerGunManager.IsDualWielding)
         {
             _text.SetText(_playerGunManager.RightGun._typeOfGun.ToString()
-            + "\nAmmo: " + _playerGunManager.RightGun.ammoInGun + "/" +
+            + "\n" + _playerGunManager.RightGun.ammoInGun + "/" +
             _playerGunManager.RightGun.ammoInReserve + "\n" +
             + _playerGunManager.LeftGun.ammoInGun + "/" +
             _playerGunManager.LeftGun.ammoInReserve);
@@ -55,7 +55,7 @@ public class GunText : MonoBehaviour
         else
         {
             _text.SetText(_playerGunManager.RightGun._typeOfGun.ToString() 
-                + "\nAmmo: " + _playerGunManager.RightGun.ammoInGun + "/" +
+                + "\n" + _playerGunManager.RightGun.ammoInGun + "/" +
                 _playerGunManager.RightGun.ammoInReserve);
         }
     }

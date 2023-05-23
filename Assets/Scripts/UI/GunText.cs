@@ -13,6 +13,7 @@ public class GunText : MonoBehaviour
     [SerializeField] private Sprite _shotgunTexture;
     [SerializeField] private Sprite _smgTexture;
     [SerializeField] private Image _gunImage;
+    [SerializeField] private Image _gunDualImage;
 
     // Start is called before the first frame update
     private void Awake()
@@ -33,18 +34,23 @@ public class GunText : MonoBehaviour
         if (_playerGunManager.RightGun._typeOfGun == Gun.TypeOfGun.Pistol)
         {
             _gunImage.sprite = _pistolTexture;
+            _gunDualImage.sprite = _pistolTexture;
         }
         else if (_playerGunManager.RightGun._typeOfGun == Gun.TypeOfGun.SMG)
         {
             _gunImage.sprite = _smgTexture;
+            _gunDualImage.sprite = _smgTexture;
         }
         else
         {
             _gunImage.sprite = _shotgunTexture;
+            _gunDualImage.sprite = null;
         }
 
         if (_playerGunManager.IsDualWielding)
         {
+            _gunDualImage.enabled = true;
+
             _text.SetText(_playerGunManager.RightGun._typeOfGun.ToString()
             + "\n" + _playerGunManager.RightGun.ammoInGun + "/" +
             _playerGunManager.RightGun.ammoInReserve + "\n" +
@@ -54,6 +60,8 @@ public class GunText : MonoBehaviour
         }
         else
         {
+            _gunDualImage.enabled = false;
+
             _text.SetText(_playerGunManager.RightGun._typeOfGun.ToString() 
                 + "\n" + _playerGunManager.RightGun.ammoInGun + "/" +
                 _playerGunManager.RightGun.ammoInReserve);

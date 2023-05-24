@@ -86,15 +86,7 @@ public class CameraController : MonoBehaviour
         _deltaAngleY = _testDeltaY;
         _angleY += _deltaAngleY;
 
-        if ((_target.position - this.transform.position).sqrMagnitude < _offsetDistance * _offsetDistance)
-        {
-            ClipCamera();
-        }
-        else
-        {
-            ClipBack();
-        }
-
+        ClipCamera();
         //Mathf.Clamp(_angleY, _yLimits.x, _yLimits.y);
         //_targetRotation = Quaternion.Euler(_angleY, _angleX, 0);
     }
